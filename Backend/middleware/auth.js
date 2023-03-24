@@ -5,9 +5,9 @@ export const verifyToken = (req, res, next) => {
     req.body.token ||
     req.query.token ||
     req.headers["x-access-token"] ||
-    req.headers.authorization.split(" ")[1]
+    req.headers.authorization?.split(" ")[1]
 
-  console.log(token)
+  // console.log(token)
 
   if (!token) {
     return res.status(403).send("Se necesita un token")

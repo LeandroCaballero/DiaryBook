@@ -7,20 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Purchase {
-  id        Int       @id @default(autoincrement())
-  createdAt DateTime  @default(now()) @db.Timestamp(6)
-  updatedAt DateTime  @updatedAt
-  dateBuy   DateTime?
-  product   String
-  quantity  Int
-  price     Float
-  shared    Boolean   @default(false)
-  total     Int
-  buyer     Int
-  User      User      @relation(fields: [buyer], references: [id])
-}
-
 model User {
   id        Int        @id @default(autoincrement())
   createdAt DateTime   @default(now()) @db.Timestamp(6)
@@ -29,4 +15,50 @@ model User {
   email     String
   password  String
   Purchases Purchase[]
+  Groups    Group[]
+}
+
+model Group {
+  id        Int        @id @default(autoincrement())
+  createdAt DateTime   @default(now()) @db.Timestamp(6)
+  updatedAt DateTime   @updatedAt
+  name      String
+  Users     User[]
+  Purchases Purchase[]
+}
+
+model Purchase {
+  id            Int            @id @default(autoincrement())
+  createdAt     DateTime       @default(now()) @db.Timestamp(6)
+  updatedAt     DateTime       @updatedAt
+  dateBuy       DateTime?
+  PurchaseItems PurchaseItem[]
+  Buyer         User           @relation(fields: [buyerId], references: [id])
+  buyerId       Int
+  Group         Group          @relation(fields: [groupId], references: [id])
+  groupId       Int
+}
+
+model PurchaseItem {
+  id         Int       @id @default(autoincrement())
+  createdAt  DateTime  @default(now()) @db.Timestamp(6)
+  updatedAt  DateTime  @updatedAt
+  quantity   Int
+  // Price here for inflation
+  price      Float
+  shared     Boolean   @default(false)
+  total      Int
+  Product    Product   @relation(fields: [productId], references: [id])
+  productId  Int
+  Purchase   Purchase? @relation(fields: [purchaseId], references: [id])
+  purchaseId Int?
+}
+
+model Product {
+  id           Int            @id @default(autoincrement())
+  createdAt    DateTime       @default(now()) @db.Timestamp(6)
+  updatedAt    DateTime       @updatedAt
+  name         String
+  description  String?
+  PurchaseItem PurchaseItem[]
 }

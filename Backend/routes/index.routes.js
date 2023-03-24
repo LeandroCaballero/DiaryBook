@@ -1,5 +1,7 @@
 import { Router } from "express"
 import { register, login, getStatus } from "../controllers/auth.controller.js"
+import { getGroups, createGroup } from "../controllers/group.controller.js"
+
 import {
   getPurchases,
   createPurchase,
@@ -16,6 +18,11 @@ router.get("/status", verifyToken, getStatus)
 
 // Purchases
 router.get("/purchase", verifyToken, getPurchases)
-router.post("/purchase", verifyToken, createPurchase)
+// router.post("/purchase", verifyToken, createPurchase)
+router.post("/purchase", createPurchase)
+
+//Groups
+router.get("/groups", verifyToken, getGroups)
+router.post("/group", verifyToken, createGroup)
 
 export default router
