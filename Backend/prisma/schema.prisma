@@ -32,6 +32,7 @@ model Purchase {
   createdAt     DateTime       @default(now()) @db.Timestamp(6)
   updatedAt     DateTime       @updatedAt
   dateBuy       DateTime?
+  name          String?
   PurchaseItems PurchaseItem[]
   Buyer         User           @relation(fields: [buyerId], references: [id])
   buyerId       Int

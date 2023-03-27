@@ -14,15 +14,15 @@ const router = Router()
 //Auth
 router.post("/register", register)
 router.post("/login", login)
-router.get("/status", verifyToken, getStatus)
+router.get("/status", getStatus)
 
 // Purchases
-router.get("/purchase", verifyToken, getPurchases)
+router.get("/purchase", getPurchases)
 // router.post("/purchase", verifyToken, createPurchase)
 router.post("/purchase", createPurchase)
 
 //Groups
-router.get("/groups", verifyToken, getGroups)
-router.post("/group", verifyToken, createGroup)
+router.get("/groups", getGroups)
+router.post("/group", createGroup)
 
 export default router

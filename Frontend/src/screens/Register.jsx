@@ -88,10 +88,7 @@ const Register = () => {
   return (
     <SafeAreaView className="bg-white h-full flex items-center justify-start">
       {/* <View className="h-10 bg-slate-700 w-full"></View> */}
-      <Image
-        className="w-10/12 h-1/3"
-        source={require("../src/assets/logo.png")}
-      />
+      <Image className="w-10/12 h-1/3" source={require("../assets/logo.png")} />
       <View className="w-10/12 h-screen">
         <View className="flex flex-col gap-y-3">
           {/* <Text>Nombre o email</Text> */}

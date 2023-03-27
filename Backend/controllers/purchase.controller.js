@@ -10,7 +10,6 @@ export const createPurchase = async (req, res) => {
   console.log(req.body)
   const { dateBuy, groupId, buyerId, purchaseItems } = req.body
 
-  // Funciona seguramente poniendo opcional el product -.-
   const newPurchaseItems = await Promise.all(
     purchaseItems.map(async (item) => {
       const newPurchaseItem = await prisma.purchaseItem.create({
@@ -23,7 +22,7 @@ export const createPurchase = async (req, res) => {
             : item.price * item.quantity,
           Product: {
             connectOrCreate: {
-              where: { id: item.product.id },
+              where: { id: +item.product.id },
               create: { name: item.product.name },
             },
           },
@@ -33,8 +32,6 @@ export const createPurchase = async (req, res) => {
       return newPurchaseItem
     })
   )
-
-  console.log(newPurchaseItems)
 
   // const newPurchaseItems = await prisma.purchaseItem.createMany({
   //   data: [

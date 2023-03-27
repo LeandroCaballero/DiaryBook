@@ -10,7 +10,7 @@ export const verifyToken = (req, res, next) => {
   // console.log(token)
 
   if (!token) {
-    return res.status(403).send("Se necesita un token")
+    return res.status(403).json({ message: "Se necesita un token" })
   }
 
   try {
