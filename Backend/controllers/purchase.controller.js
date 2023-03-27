@@ -1,7 +1,9 @@
 import { prisma } from "../server/prisma.js"
 
 export const getPurchases = async (req, res) => {
-  const purchases = await prisma.purchase.findMany()
+  const purchases = await prisma.purchase.findMany({
+    include: { PurchaseItems: true },
+  })
 
   res.status(200).json(purchases)
 }

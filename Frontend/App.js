@@ -5,6 +5,8 @@ import Home from "./src/screens/Home"
 // import Home from "./src/screens/Home"
 import Login from "./src/screens/Login"
 import Register from "./src/screens/Register"
+import PurchaseDetails from "./src/screens/PurchaseDetails"
+
 import { AuthContext, AuthProvider } from "./src/context/AuthContext"
 
 const Stack = createNativeStackNavigator()
@@ -23,6 +25,7 @@ export default function App() {
             <Stack.Screen name="Home" component={Home} />
             <Stack.Screen name="Login" component={Login} />
             <Stack.Screen name="Register" component={Register} />
+            <Stack.Screen name="PurchaseDetails" component={PurchaseDetails} />
           </>
           {/* {context.isLogged ? (
             <Stack.Screen name="Home" component={Home} />

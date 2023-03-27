@@ -2,12 +2,15 @@ import React, { useEffect, useLayoutEffect, useState } from "react"
 import {
   View,
   Text,
-  Button,
+  Pressable,
   ActivityIndicator,
   RefreshControl,
   ScrollView,
 } from "react-native"
+import ContentLoader, { List } from "react-content-loader/native"
 import { SafeAreaView } from "react-native-safe-area-context"
+import { PlusIcon } from "react-native-heroicons/outline"
+
 import CarouselGroups from "../components/Home/CarouselGroups"
 import PurchaseItem from "../components/Home/PurchaseItem"
 
@@ -49,23 +52,19 @@ const Home = ({ navigation }) => {
     } finally {
       setLoading(false)
     }
+  }
 
-    // try {
-    //   const response = await fetch("http://192.168.0.14:3001/groups")
-
-    //   const json = await response.json()
-    //   setData(json)
-    // } catch (error) {
-    //   console.error(error)
-    // } finally {
-    //   // console.log("Grupos", data)
-    //   setLoading(false)
-    // }
+  const toDetails = () => {
+    navigation.navigate("PurchaseDetails")
   }
 
   return (
-    <SafeAreaView className=" p-3 h-full bg-blue-800 ">
+    <SafeAreaView className="p-3 h-full bg-blue-800 ">
       <Text className="text-2xl text-white">Bienvenido Leandro</Text>
+
+      <Pressable className="bg-green-700 absolute bottom-5 right-5 rounded-full p-5">
+        <PlusIcon size={30} color="#FFFFFF" />
+      </Pressable>
 
       <ScrollView
         refreshControl={
@@ -87,11 +86,15 @@ const Home = ({ navigation }) => {
         )}
         <Text className="text-lg text-white">Mis ultimas compras</Text>
         {loading ? (
-          <ActivityIndicator />
+          <List width="300" height="300" />
         ) : (
           // <PurchaseList purchases={data.purchases} />
           data.purchases.map((purchase) => (
-            <PurchaseItem item={purchase} key={purchase.id} />
+            <PurchaseItem
+              item={purchase}
+              key={purchase.id}
+              toDetailsScreen={toDetails}
+            />
           ))
         )}
       </ScrollView>
