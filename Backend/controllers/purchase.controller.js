@@ -67,3 +67,12 @@ export const createPurchase = async (req, res) => {
 
   res.json(newPurchase)
 }
+
+export const getOnePruchase = async (req, res) => {
+  const purchase = await prisma.purchase.findFirst({
+    where: { id: +req.params.id },
+    include: { PurchaseItems: { include: { Product: true } } },
+  })
+
+  res.status(200).json(purchase)
+}

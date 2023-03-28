@@ -12,7 +12,7 @@ import { SafeAreaView } from "react-native-safe-area-context"
 import { PlusIcon } from "react-native-heroicons/outline"
 
 import CarouselGroups from "../components/Home/CarouselGroups"
-import PurchaseItem from "../components/Home/PurchaseItem"
+import PurchaseComponent from "../components/Home/PurchaseComponent"
 
 import { useFetch } from "../hooks/useFetch"
 
@@ -38,7 +38,7 @@ const Home = ({ navigation }) => {
     try {
       const [groups, purchases] = await Promise.all([
         await fetch("http://192.168.0.14:3001/groups"),
-        await fetch("http://192.168.0.14:3001/purchase"),
+        await fetch("http://192.168.0.14:3001/purchases"),
       ])
 
       const groupsJSON = await groups.json()
@@ -59,7 +59,7 @@ const Home = ({ navigation }) => {
   }
 
   return (
-    <SafeAreaView className="p-3 h-full bg-blue-800 ">
+    <SafeAreaView className="p-3 h-full bg-blue-800">
       <Text className="text-2xl text-white">Bienvenido Leandro</Text>
 
       <Pressable className="bg-green-700 absolute bottom-5 right-5 rounded-full p-5">
@@ -90,7 +90,7 @@ const Home = ({ navigation }) => {
         ) : (
           // <PurchaseList purchases={data.purchases} />
           data.purchases.map((purchase) => (
-            <PurchaseItem
+            <PurchaseComponent
               item={purchase}
               key={purchase.id}
               toDetailsScreen={toDetails}
