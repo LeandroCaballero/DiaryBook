@@ -1,9 +1,12 @@
 import {
+  TouchableOpacity,
+  Modal,
   View,
   Text,
   ScrollView,
   RefreshControl,
   ActivityIndicator,
+  Pressable,
 } from "react-native"
 import React, { useEffect, useLayoutEffect, useState } from "react"
 import dayjs from "dayjs"
@@ -12,6 +15,7 @@ import "dayjs/locale/es"
 const PurchaseDetails = ({ route }) => {
   const [data, setData] = useState()
   const [loading, setLoading] = useState(false)
+  const [modalVisible, setModalVisible] = useState(false)
 
   useEffect(() => {
     fetchData()
@@ -52,11 +56,32 @@ const PurchaseDetails = ({ route }) => {
         <ActivityIndicator />
       ) : (
         data?.PurchaseItems.map((purchase) => (
-          <Text className="text-white" key={purchase.id}>
-            {purchase.Product.name}
-          </Text>
+          <TouchableOpacity
+            key={purchase.id}
+            className="border border-white mb-3 py-2"
+            onPress={() => setModalVisible(!modalVisible)}
+          >
+            <Text className="text-white">{purchase.Product.name}</Text>
+          </TouchableOpacity>
         ))
       )}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible)
+        }}
+      >
+        <View className="flex flex-row justify-center items-center">
+          <View className="bg-white rounded-md p-3">
+            <Text className="text-center">Hello Worlds!</Text>
+            <Pressable onPress={() => setModalVisible(!modalVisible)}>
+              <Text>Hide Modal</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   )
 }

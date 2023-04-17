@@ -62,7 +62,10 @@ const Home = ({ navigation }) => {
     <SafeAreaView className="p-3 h-full bg-blue-800">
       <Text className="text-2xl text-white">Bienvenido Leandro</Text>
 
-      <Pressable className="bg-green-700 absolute bottom-5 right-5 rounded-full p-5">
+      <Pressable
+        onPress={() => navigation.navigate("CreatePurchase")}
+        className="border-2 border-white absolute bottom-5 right-5 rounded-full p-5 z-10"
+      >
         <PlusIcon size={30} color="#FFFFFF" />
       </Pressable>
 

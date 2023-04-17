@@ -8,6 +8,7 @@ import Register from "./src/screens/Register"
 import PurchaseDetails from "./src/screens/PurchaseDetails"
 
 import { AuthContext, AuthProvider } from "./src/context/AuthContext"
+import CreatePurchase from "./src/screens/CreatePurchase"
 
 const Stack = createNativeStackNavigator()
 
@@ -22,6 +23,7 @@ export default function App() {
       <NavigationContainer>
         <Stack.Navigator>
           <>
+            <Stack.Screen name="CreatePurchase" component={CreatePurchase} />
             <Stack.Screen name="Home" component={Home} />
             <Stack.Screen name="Login" component={Login} />
             <Stack.Screen name="Register" component={Register} />
