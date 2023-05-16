@@ -18,6 +18,16 @@ router.post("/register", register)
 router.post("/login", login)
 router.get("/status", getStatus)
 
+router.get(["/", "/test/:name"], (req, res) => {
+  let greeting = "<h1>Hello From Node on Fly!</h1>"
+  let name = req.params["name"]
+  if (name) {
+    res.send(greeting + "</br>and hello to " + name)
+  } else {
+    res.send(greeting)
+  }
+})
+
 // Purchases
 router.get("/purchases", getPurchases)
 router.get("/purchase/:id", getOnePruchase)

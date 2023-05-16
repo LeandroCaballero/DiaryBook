@@ -1,11 +1,23 @@
 import { prisma } from "../server/prisma.js"
 
 export const getPurchases = async (req, res) => {
-  const purchases = await prisma.purchase.findMany({
-    include: { PurchaseItems: true },
-  })
+  // console.log("entro al try en purchase")
+  // await fetch("https://www.cultura.gob.ar/api/v2.0/?format=json")
+  //   .then((res) => res.json())
+  //   .then((resp) => res.status(200).json(resp))
+  //   .catch((err) => console.log("ERROR", err))
+  try {
+    console.log("ENTER TRY")
 
-  res.status(200).json(purchases)
+    const purchases = await prisma.purchase.findMany({
+      include: { PurchaseItems: true },
+    })
+
+    console.log(purchases)
+    res.status(200).json(purchases)
+  } catch (error) {
+    console.log("ERRORRRRRRRRRRR", error)
+  }
 }
 
 export const createPurchase = async (req, res) => {

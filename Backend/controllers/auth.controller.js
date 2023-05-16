@@ -1,10 +1,9 @@
 import bcrypt from "bcryptjs"
-import { prisma } from "../server/prisma.js"
 import jwt from "jsonwebtoken"
+import { prisma } from "../server/prisma.js"
 
 export const register = async (req, res) => {
   const { name, email, password } = req.body
-  // console.log(name, email, password)
 
   const oldUser = await prisma.user.findFirst({ where: { email } })
 
