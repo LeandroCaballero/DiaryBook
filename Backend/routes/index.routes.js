@@ -2,6 +2,7 @@ import { Router } from "express"
 import { register, login, getStatus } from "../controllers/auth.controller.js"
 import { getGroups, createGroup } from "../controllers/group.controller.js"
 import { getProducts } from "../controllers/product.controller.js"
+import { getTest } from "../controllers/test.controller.js"
 
 import {
   getPurchases,
@@ -30,12 +31,14 @@ router.get(["/", "/test/:name"], (req, res) => {
 
 // Purchases
 router.get("/purchases", getPurchases)
+router.post("/test", getTest)
 router.get("/purchase/:id", getOnePruchase)
 router.post("/purchase", createPurchase)
 // router.post("/purchase", verifyToken, createPurchase)
 
 //Groups
 router.get("/groups", getGroups)
+
 router.post("/group", createGroup)
 
 // Products

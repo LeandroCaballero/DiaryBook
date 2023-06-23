@@ -6,6 +6,7 @@ import Home from "./src/screens/Home"
 import Login from "./src/screens/Login"
 import Register from "./src/screens/Register"
 import PurchaseDetails from "./src/screens/PurchaseDetails"
+import Test from "./src/screens/Test"
 
 import { AuthContext, AuthProvider } from "./src/context/AuthContext"
 import CreatePurchase from "./src/screens/CreatePurchase"
@@ -23,6 +24,7 @@ export default function App() {
       <NavigationContainer>
         <Stack.Navigator>
           <>
+            {/* <Stack.Screen name="Test" component={Test} /> */}
             <Stack.Screen name="CreatePurchase" component={CreatePurchase} />
             <Stack.Screen name="Home" component={Home} />
             <Stack.Screen name="Login" component={Login} />

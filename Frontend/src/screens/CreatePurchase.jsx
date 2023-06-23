@@ -1,8 +1,19 @@
-import { View, Text, TextInput, Button, Pressable, Switch } from "react-native"
-import React, { useState } from "react"
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  Pressable,
+  Switch,
+  ToastAndroid,
+  Image,
+} from "react-native"
+import { Camera, CameraType } from "expo-camera"
+import React, { useState, useEffect } from "react"
 import DateTimePicker from "@react-native-community/datetimepicker"
 import DropDownPicker from "react-native-dropdown-picker"
 import dayjs from "dayjs"
+// import FormData from "form-data"
 
 import "dayjs/locale/es"
 import { CheckIcon, XMarkIcon } from "react-native-heroicons/outline"
@@ -10,7 +21,14 @@ import { CheckIcon, XMarkIcon } from "react-native-heroicons/outline"
 const CreatePurchase = () => {
   const [date, setDate] = useState(new Date())
   const [mode, setMode] = useState("date")
-  const [show, setShow] = useState(false)
+  const [showCalendar, setShowCalendar] = useState(false)
+
+  // Camera
+  const [cameraRef, setCameraRef] = useState(null)
+  const [photoUri, setPhotoUri] = useState(null)
+  const [type, setType] = useState(CameraType.back)
+  const [permission, requestPermission] = Camera.useCameraPermissions()
+  const [showCamera, setShowCamera] = useState(false)
 
   const [showNewPurchaseItem, setShowNewPurchaseItem] = useState(false)
   const [newPurchaseItem, setNewPurchaseItem] = useState({
@@ -35,14 +53,38 @@ const CreatePurchase = () => {
     { label: "Banana", value: "banana" },
   ])
 
+  useEffect(() => {
+    // console.log(data)
+    fetchData()
+  }, [])
+
+  const fetchData = async () => {
+    // setLoading(true)
+    try {
+      const [groups, purchases] = await Promise.all([
+        await fetch("http://192.168.0.14:3001/groups"),
+        await fetch("http://192.168.0.14:3001/purchases"),
+      ])
+
+      const groupsJSON = await groups.json()
+      const purchasesJSON = await purchases.json()
+
+      setData({ groups: groupsJSON, purchases: purchasesJSON })
+    } catch (error) {
+      console.log(error)
+    } finally {
+      // setLoading(false)
+    }
+  }
+
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate
-    setShow(false)
+    setShowCalendar(false)
     setDate(currentDate)
   }
 
   const showDatepicker = () => {
-    setShow(true)
+    setShowCalendar(true)
   }
   const [isEnabled, setIsEnabled] = useState(false)
   const toggleSwitch = () => setIsEnabled((previousState) => !previousState)
@@ -76,6 +118,74 @@ const CreatePurchase = () => {
     })
   }
 
+  const takePicture = async () => {
+    // ToastAndroid.show("Test", ToastAndroid.SHORT)
+    if (permission) {
+      setShowCamera(true)
+    } else {
+      await requestPermission()
+      permission
+        ? setShowCamera(true)
+        : ToastAndroid.show("Cámara denegada!", ToastAndroid.SHORT)
+    }
+  }
+
+  const toggleCameraType = () => {
+    setType((current) =>
+      current === CameraType.back ? CameraType.front : CameraType.back
+    )
+  }
+
+  const takePhoto = async () => {
+    if (cameraRef) {
+      const photo = await cameraRef.takePictureAsync()
+      // console.log(photo)
+      setPhotoUri(photo.uri)
+    }
+  }
+
+  const sendPhoto = async () => {
+    let formData = new FormData()
+    formData.append("photo", {
+      uri: photoUri,
+      name: "photo.jpg",
+      type: "image/jpeg",
+    })
+
+    // console.log(formData)
+
+    try {
+      const response = await fetch("http://192.168.0.14:3001/test", {
+        method: "POST",
+        body: formData,
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
+
+      const responseJson = await response.json()
+      console.log(responseJson)
+    } catch (error) {
+      console.log(error)
+    } finally {
+      // setLoading(false)
+    }
+
+    // await fetch("http://localhost:3001/test", {
+    //   method: "POST",
+    //   body: formData,
+    // })
+    //   .then((response) => response.json())
+    //   .then((data) => {
+    //     // Use the data from the server here
+    //     console.log(data)
+    //   })
+    //   .catch((error) => {
+    //     // Handle any errors that occur
+    //     console.error(error)
+    //   })
+  }
+
   return (
     <View className="p-3 h-full bg-blue-800">
       <Text className="text-white text-2xl text-center">Cargar compra</Text>
@@ -90,13 +200,13 @@ const CreatePurchase = () => {
       </Text>
       <Pressable
         className="border bg-white rounded-lg p-2 my-1 w-1/2"
-        onPress={() => setShow(true)}
+        onPress={() => setShowCalendar(true)}
       >
         <Text className="text-center">Seleccionar fecha</Text>
       </Pressable>
 
       <Text className="text-white text-center text-lg">Items de la compra</Text>
-      {data.purchaseItems.map((item, index) => (
+      {data.purchaseItems?.map((item, index) => (
         <View
           key={index}
           className="border border-white rounded-lg flex flex-row items-center"
@@ -119,7 +229,7 @@ const CreatePurchase = () => {
         </View>
       ))}
 
-      {show && (
+      {showCalendar && (
         <DateTimePicker
           testID="dateTimePicker"
           value={date}
@@ -196,6 +306,49 @@ const CreatePurchase = () => {
         >
           <Text className="text-white p-2">Agregar</Text>
         </Pressable>
+      )}
+
+      {!showCamera ? (
+        <View className="h-full">
+          <Pressable
+            className="border bg-white rounded-lg p-2 my-1 w-1/2"
+            onPress={takePicture}
+          >
+            <Text className="text-center">Foto a ticket</Text>
+          </Pressable>
+          <Pressable
+            className="border bg-white rounded-lg p-2 my-1 w-1/2"
+            onPress={sendPhoto}
+          >
+            <Text className="text-center">Enviar</Text>
+          </Pressable>
+          <Image
+            className="h-full"
+            source={{
+              uri: photoUri,
+            }}
+          />
+        </View>
+      ) : (
+        <View className="h-full">
+          <Camera
+            className="h-screen"
+            type={type}
+            ref={(ref) => setCameraRef(ref)}
+          >
+            <View>
+              <Pressable onPress={takePhoto}>
+                <Text className="text-white text-lg">Tomar</Text>
+              </Pressable>
+              <Pressable onPress={toggleCameraType}>
+                <Text className="text-white text-lg">Flip Camera</Text>
+              </Pressable>
+              <Pressable onPress={() => setShowCamera(false)}>
+                <Text className="text-white text-lg">Cancelar</Text>
+              </Pressable>
+            </View>
+          </Camera>
+        </View>
       )}
     </View>
   )
