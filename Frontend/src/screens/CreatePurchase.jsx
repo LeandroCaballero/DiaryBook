@@ -164,26 +164,25 @@ const CreatePurchase = () => {
       })
 
       const responseJson = await response.json()
-      console.log(responseJson)
+      // console.log(responseJson)
+
+      const newInfo = responseJson.map((el) => {
+        console.log(el)
+        return {
+          name: el.description,
+          price: el.unit_price,
+          quantity: el.quantity,
+          shared: true,
+        }
+      })
+
+      setData({ ...data, purchaseItems: newInfo })
+      // console.log(responseJson)
     } catch (error) {
       console.log(error)
     } finally {
       // setLoading(false)
     }
-
-    // await fetch("http://localhost:3001/test", {
-    //   method: "POST",
-    //   body: formData,
-    // })
-    //   .then((response) => response.json())
-    //   .then((data) => {
-    //     // Use the data from the server here
-    //     console.log(data)
-    //   })
-    //   .catch((error) => {
-    //     // Handle any errors that occur
-    //     console.error(error)
-    //   })
   }
 
   return (
@@ -212,6 +211,7 @@ const CreatePurchase = () => {
           className="border border-white rounded-lg flex flex-row items-center"
         >
           <View className="w-2/3">
+            <Text className="text-white">Nombre: {item.name}</Text>
             <Text className="text-white">Precio: {item.price}</Text>
             <Text className="text-white">Cantidad: {item.quantity}</Text>
             <Text className="text-white">

@@ -2,6 +2,8 @@ import { prisma } from "../server/prisma.js"
 import axios from "axios"
 
 export const getTest = async (req, res) => {
+  console.log("Empieza")
+
   let token = "378ccf5fd6742e91d73427dbfff882c5"
 
   const data = {
@@ -21,8 +23,15 @@ export const getTest = async (req, res) => {
 
   try {
     let response = await axios(config)
-    res.status(200).json(response.data)
-    // console.log(response.data)
+    console.log(response.data.document.inference.prediction.line_items)
+    res
+      .status(200)
+      .json(
+        response.data.document.inference.prediction.line_items.filter(
+          (el) => el.confidence >= 0.9
+        )
+      )
+    // console.log(response.data.document)
   } catch (error) {
     console.log(error)
     res.status(500).json({ message: "error" })
