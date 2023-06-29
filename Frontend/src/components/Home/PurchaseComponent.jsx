@@ -4,10 +4,10 @@ import React from "react"
 import dayjs from "dayjs"
 import "dayjs/locale/es"
 import { useNavigation } from "@react-navigation/native"
+dayjs.locale("es")
 
 const PurchaseItem = ({ item }) => {
   const navigation = useNavigation()
-  dayjs.locale("es")
   return (
     <TouchableOpacity
       className="border p-2 border-white rounded-md my-2 w-full"

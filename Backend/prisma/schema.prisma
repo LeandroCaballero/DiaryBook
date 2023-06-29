@@ -8,14 +8,16 @@ datasource db {
 }
 
 model User {
-  id        Int        @id @default(autoincrement())
-  createdAt DateTime   @default(now()) @db.Timestamp(6)
-  updatedAt DateTime   @updatedAt
-  name      String
-  email     String
-  password  String
-  Purchases Purchase[]
-  Groups    Group[]
+  id             Int            @id @default(autoincrement())
+  createdAt      DateTime       @default(now()) @db.Timestamp(6)
+  updatedAt      DateTime       @updatedAt
+  name           String
+  email          String
+  password       String
+  Purchases      Purchase[]
+  Groups         Group[]
+  PurchaseItem   PurchaseItem[]
+  purchaseItemId Int?
 }
 
 model Group {
@@ -41,25 +43,26 @@ model Purchase {
 }
 
 model PurchaseItem {
-  id         Int       @id @default(autoincrement())
-  createdAt  DateTime  @default(now()) @db.Timestamp(6)
-  updatedAt  DateTime  @updatedAt
-  quantity   Int
+  id          Int       @id @default(autoincrement())
+  createdAt   DateTime  @default(now()) @db.Timestamp(6)
+  updatedAt   DateTime  @updatedAt
+  quantity    Int
   // Price here for inflation
-  price      Float
-  shared     Boolean   @default(false)
-  total      Int
-  Product    Product   @relation(fields: [productId], references: [id])
-  productId  Int
-  Purchase   Purchase? @relation(fields: [purchaseId], references: [id])
-  purchaseId Int?
+  productName String
+  price       Float
+  shared      User[]
+  total       Int
+  // Product    Product   @relation(fields: [productId], references: [id])
+  // productId   Int
+  Purchase    Purchase? @relation(fields: [purchaseId], references: [id])
+  purchaseId  Int?
 }
 
-model Product {
-  id           Int            @id @default(autoincrement())
-  createdAt    DateTime       @default(now()) @db.Timestamp(6)
-  updatedAt    DateTime       @updatedAt
-  name         String
-  description  String?
-  PurchaseItem PurchaseItem[]
-}
+// model Product {
+//   id           Int            @id @default(autoincrement())
+//   createdAt    DateTime       @default(now()) @db.Timestamp(6)
+//   updatedAt    DateTime       @updatedAt
+//   name         String
+//   description  String?
+//   PurchaseItem PurchaseItem[]
+// }

@@ -28,7 +28,7 @@ export const getTest = async (req, res) => {
       .status(200)
       .json(
         response.data.document.inference.prediction.line_items.filter(
-          (el) => el.confidence >= 0.9
+          (el) => el.confidence >= 0.85
         )
       )
     // console.log(response.data.document)

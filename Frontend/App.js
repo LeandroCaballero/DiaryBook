@@ -25,7 +25,7 @@ export default function App() {
         <Stack.Navigator>
           <>
             {/* <Stack.Screen name="Test" component={Test} /> */}
-            <Stack.Screen name="CreatePurchase" component={CreatePurchase} />
+            <Stack.Screen name="Agregar Compra" component={CreatePurchase} />
             <Stack.Screen name="Home" component={Home} />
             <Stack.Screen name="Login" component={Login} />
             <Stack.Screen name="Register" component={Register} />
