@@ -66,7 +66,7 @@ const Register = () => {
       const json = await response.json()
       if (response?.ok) {
         ToastAndroid.show("Registro exitoso, inicie sesión", ToastAndroid.LONG)
-        setTimeout(() => navigation.navigate("Home"), 1500)
+        setTimeout(() => navigation.navigate("Login"), 1500)
       } else {
         ToastAndroid.show("El email ya existe!", ToastAndroid.SHORT)
       }

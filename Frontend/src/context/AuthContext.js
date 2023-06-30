@@ -6,9 +6,14 @@ export const AuthContext = createContext({})
 
 export const AuthProvider = ({ children }) => {
   //   console.log(children)
-  const [userInfo, setUserInfo] = useState({})
+  const [userInfo, setUserInfo] = useState()
   //   const [isLoading, setIsLoading] = useState(false)
   const [isLogged, setIsLogged] = useState(false)
+
+  useEffect(() => {
+    isLoggedIn()
+    console.log("desde el context")
+  }, [])
 
   const isLoggedIn = async () => {
     try {
@@ -39,17 +44,12 @@ export const AuthProvider = ({ children }) => {
     }
   }
 
-  useEffect(() => {
-    // console.log("desde authcontext")
-    isLoggedIn()
-  }, [])
-
   return (
     <AuthContext.Provider
       value={{
         userInfo,
         isLogged,
-        setUserInfo,
+        // setUserInfo,
         setIsLogged,
       }}
     >

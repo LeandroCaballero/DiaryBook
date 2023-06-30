@@ -46,11 +46,10 @@ const Login = ({ navigation }) => {
       if (response?.ok) {
         console.log("bien")
         ToastAndroid.show(json.message, ToastAndroid.SHORT)
-        setIsLogged(true)
         await AsyncStorage.setItem("userInfo", JSON.stringify(json))
-        console.log("bien")
+        setIsLogged(true)
         // setTimeout(() => navigation.navigate("Home"), 1500)
-        toHome()
+        // toHome()
       } else {
         ToastAndroid.show(json.message, ToastAndroid.SHORT)
         setLoading(false)
@@ -83,13 +82,13 @@ const Login = ({ navigation }) => {
 
   const toRegister = () => {
     // console.log("register")
-    navigation.navigate("Home")
+    navigation.navigate("Register")
   }
 
-  const toHome = () => {
-    // console.log("register")
-    navigation.navigate("Home")
-  }
+  // const toHome = () => {
+  //   // console.log("register")
+  //   navigation.navigate("Home")
+  // }
 
   return (
     <SafeAreaView className="bg-white h-full flex items-center justify-start">
@@ -115,7 +114,7 @@ const Login = ({ navigation }) => {
             }}
           ></TextInput>
           <Button title="Ingresar" onPress={login} />
-          <Text className="text-blue-400 text-right" onPress={toHome}>
+          <Text className="text-blue-400 text-right" onPress={toRegister}>
             Registrarse
           </Text>
           {loading && <ActivityIndicator />}

@@ -15,8 +15,9 @@ const Stack = createNativeStackNavigator()
 
 export default function App() {
   const context = useContext(AuthContext)
+
   useEffect(() => {
-    // console.log("DALEE", context.isLogged)
+    console.log("DALEE", context.isLogged)
   }, [context.isLogged])
 
   return (
@@ -24,20 +25,25 @@ export default function App() {
       <NavigationContainer>
         <Stack.Navigator>
           <>
-            {/* <Stack.Screen name="Test" component={Test} /> */}
-            <Stack.Screen name="Agregar Compra" component={CreatePurchase} />
-            <Stack.Screen name="Home" component={Home} />
             <Stack.Screen name="Login" component={Login} />
             <Stack.Screen name="Register" component={Register} />
+            <Stack.Screen name="Home" component={Home} />
+            <Stack.Screen name="Agregar Compra" component={CreatePurchase} />
             <Stack.Screen name="PurchaseDetails" component={PurchaseDetails} />
           </>
           {/* {context.isLogged ? (
-            <Stack.Screen name="Home" component={Home} />
+            <>
+              <Stack.Screen name="Home" component={Home} />
+              <Stack.Screen name="Agregar Compra" component={CreatePurchase} />
+              <Stack.Screen
+                name="PurchaseDetails"
+                component={PurchaseDetails}
+              />
+            </>
           ) : (
             <>
               <Stack.Screen name="Login" component={Login} />
               <Stack.Screen name="Register" component={Register} />
-              <Stack.Screen name="Home" component={Home} />
             </>
           )} */}
 

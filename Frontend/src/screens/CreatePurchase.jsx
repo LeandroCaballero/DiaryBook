@@ -56,8 +56,6 @@ const CreatePurchase = () => {
     dateBuy: "",
   })
 
-  // console.log("Items", data)
-
   // Dropdown
   const [open, setOpen] = useState(false)
   const [value, setValue] = useState(null)

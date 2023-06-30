@@ -4,6 +4,7 @@ import { prisma } from "../server/prisma.js"
 
 export const register = async (req, res) => {
   const { name, email, password } = req.body
+  console.log("Entra en register", req.body)
 
   const oldUser = await prisma.user.findFirst({ where: { email } })
 
@@ -21,24 +22,19 @@ export const register = async (req, res) => {
     },
   })
 
-  const token = jwt.sign({ user_id: user.id, email }, process.env.TOKEN_KEY, {
-    expiresIn: "2h",
-  })
-
   // AsyncStorage.setItem('userInfo', JSON.stringify(user));
 
   // return new user
   res.json({
     id: user.id,
     email: user.email,
-    token: token,
     message: "Registro exitoso, inicie sesión",
   })
 }
 
 export const login = async (req, res) => {
   const { email, password } = req.body
-  // console.log(email, password)
+  console.log(email, password)
 
   const existUser = await prisma.user.findFirst({ where: { email } })
 
