@@ -16,7 +16,7 @@ import { AuthContext } from "../context/AuthContext"
 // Mantén tus compras bajo control
 
 const Login = ({ navigation }) => {
-  const { setIsLogged } = useContext(AuthContext)
+  const { setIsLogged, isLogged } = useContext(AuthContext)
 
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -81,8 +81,9 @@ const Login = ({ navigation }) => {
   // }
 
   const toRegister = () => {
-    // console.log("register")
-    navigation.navigate("Register")
+    console.log("ANTES", isLogged)
+    setIsLogged(!isLogged)
+    // navigation.navigate("Register")
   }
 
   // const toHome = () => {
@@ -99,7 +100,7 @@ const Login = ({ navigation }) => {
           {/* <Text>Nombre o email</Text> */}
           <TextInput
             className="border-b border-black p-2"
-            placeholder="Nombre o email"
+            placeholder="Email"
             onChangeText={(e) => {
               setEmail(e)
             }}

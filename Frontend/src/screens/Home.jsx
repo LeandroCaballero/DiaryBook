@@ -10,16 +10,16 @@ import {
 import ContentLoader, { List } from "react-content-loader/native"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { PlusIcon } from "react-native-heroicons/outline"
+import AsyncStorage from "@react-native-async-storage/async-storage"
 
 import CarouselGroups from "../components/Home/CarouselGroups"
 import PurchaseComponent from "../components/Home/PurchaseComponent"
-
-import { useFetch } from "../hooks/useFetch"
 
 const Home = ({ navigation }) => {
   // const navigation = useNavigation()
   // const { data } = useFetch("http://192.168.0.14:3001/groups")
   const [data, setData] = useState({ groups: [], purchases: [] })
+  const [user, setUser] = useState()
   const [loading, setLoading] = useState(false)
 
   useLayoutEffect(() => {
@@ -43,6 +43,8 @@ const Home = ({ navigation }) => {
 
       const groupsJSON = await groups.json()
       const purchasesJSON = await purchases.json()
+      let userInfo = await AsyncStorage.getItem("userInfo")
+      setUser(JSON.parse(userInfo))
 
       // console.log("grupos", groupsJSON)
       // console.log("purchases", purchasesJSON)
@@ -59,12 +61,18 @@ const Home = ({ navigation }) => {
   }
 
   return (
-    <SafeAreaView className="p-3 h-full bg-blue-800">
-      <Text className="text-2xl text-white">Bienvenido Leandro</Text>
+    <SafeAreaView className="p-3 h-full">
+      <Text className="text-2xl ">Bienvenido {user?.name}</Text>
+      <Pressable
+        onPress={() => navigation.navigate("CreatePurchase")}
+        className="rounded-full p-5 z-10"
+      >
+        <PlusIcon size={30} color="#123122" />
+      </Pressable>
 
       <Pressable
         onPress={() => navigation.navigate("CreatePurchase")}
-        className="border-2 border-white absolute bottom-5 right-5 rounded-full p-5 z-10"
+        className=" absolute bottom-5 right-5 rounded-full p-5 z-10"
       >
         <PlusIcon size={30} color="#FFFFFF" />
       </Pressable>
@@ -81,13 +89,13 @@ const Home = ({ navigation }) => {
           onPress={() => navigation.navigate("Register")}
         />
         <Button title="Login" onPress={() => navigation.navigate("Login")} /> */}
-        <Text className="text-lg text-white">Mis grupos</Text>
+        <Text className="text-lg">Mis grupos</Text>
         {loading ? (
           <ActivityIndicator />
         ) : (
           <CarouselGroups groups={data.groups} />
         )}
-        <Text className="text-lg text-white">Mis ultimas compras</Text>
+        <Text className="text-lg ">Mis ultimas compras</Text>
         {loading ? (
           <List width="300" height="300" />
         ) : (
