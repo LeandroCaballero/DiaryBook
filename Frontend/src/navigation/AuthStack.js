@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack"
 import Home from "../screens/Home"
 import PurchaseDetails from "../screens/PurchaseDetails"
 import CreatePurchase from "../screens/CreatePurchase"
+import CreateGroup from "../screens/CreateGroup"
 
 const Stack = createNativeStackNavigator()
 
@@ -11,8 +12,13 @@ const AuthStack = () => {
     <Stack.Navigator>
       <>
         <Stack.Screen name="Home" component={Home} />
-        <Stack.Screen name="Agregar Compra" component={CreatePurchase} />
+        <Stack.Screen
+          options={{ title: "Crear compra" }}
+          name="CreatePurchase"
+          component={CreatePurchase}
+        />
         <Stack.Screen name="PurchaseDetails" component={PurchaseDetails} />
+        <Stack.Screen name="CreateGroup" component={CreateGroup} />
       </>
     </Stack.Navigator>
   )

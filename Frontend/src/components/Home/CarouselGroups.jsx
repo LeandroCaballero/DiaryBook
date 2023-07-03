@@ -12,13 +12,17 @@ const GroupItem = ({ name }) => (
 const CarouselGroups = ({ groups }) => {
   return (
     <View className="my-2">
-      <FlatList
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        data={groups}
-        renderItem={({ item }) => <GroupItem name={item.name} />}
-        keyExtractor={(item) => item.id}
-      />
+      {groups.lenght > 0 ? (
+        <FlatList
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          data={groups}
+          renderItem={({ item }) => <GroupItem name={item.name} />}
+          keyExtractor={(item) => item.id}
+        />
+      ) : (
+        <Text>Sin resultados</Text>
+      )}
     </View>
   )
 }

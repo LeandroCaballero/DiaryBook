@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useState } from "react"
+import React, { useContext, useEffect, useLayoutEffect, useState } from "react"
 import {
   View,
   Text,
@@ -14,10 +14,13 @@ import AsyncStorage from "@react-native-async-storage/async-storage"
 
 import CarouselGroups from "../components/Home/CarouselGroups"
 import PurchaseComponent from "../components/Home/PurchaseComponent"
+import { AuthContext } from "../context/AuthContext"
+
+import { UserCircleIcon } from "react-native-heroicons/outline"
 
 const Home = ({ navigation }) => {
-  // const navigation = useNavigation()
-  // const { data } = useFetch("http://192.168.0.14:3001/groups")
+  const { setIsLogged } = useContext(AuthContext)
+
   const [data, setData] = useState({ groups: [], purchases: [] })
   const [user, setUser] = useState()
   const [loading, setLoading] = useState(false)
@@ -60,15 +63,19 @@ const Home = ({ navigation }) => {
     navigation.navigate("PurchaseDetails")
   }
 
+  const loggout = async () => {
+    await AsyncStorage.removeItem("userInfo")
+    setIsLogged(false)
+  }
+
   return (
     <SafeAreaView className="p-3 h-full">
-      <Text className="text-2xl ">Bienvenido {user?.name}</Text>
-      <Pressable
-        onPress={() => navigation.navigate("CreatePurchase")}
-        className="rounded-full p-5 z-10"
-      >
-        <PlusIcon size={30} color="#123122" />
-      </Pressable>
+      <View className="flex flex-row justify-between">
+        <Text className="text-xl">Bienvenido {user?.name}</Text>
+        <Pressable onPress={loggout} className="rounded-full border p-0.5">
+          <UserCircleIcon size={30} color="#000000" />
+        </Pressable>
+      </View>
 
       <Pressable
         onPress={() => navigation.navigate("CreatePurchase")}
@@ -83,23 +90,33 @@ const Home = ({ navigation }) => {
         }
         className="flex flex-column"
       >
-        {/* <ChevronDownIcon size={30} color="#D24729" />
-        <Button
-          title="Registro"
-          onPress={() => navigation.navigate("Register")}
-        />
-        <Button title="Login" onPress={() => navigation.navigate("Login")} /> */}
-        <Text className="text-lg">Mis grupos</Text>
+        <View className="flex flex-row justify-between mt-5">
+          <Text className="text-lg">Mis grupos</Text>
+          <Pressable
+            onPress={() => navigation.navigate("CreateGroup")}
+            className="rounded-full border p-0.5"
+          >
+            <PlusIcon size={25} color="#000000" />
+          </Pressable>
+        </View>
         {loading ? (
           <ActivityIndicator />
         ) : (
           <CarouselGroups groups={data.groups} />
         )}
-        <Text className="text-lg ">Mis ultimas compras</Text>
+        <View className="flex flex-row justify-between mt-5">
+          <Text className="text-lg">Mis últimas compras</Text>
+          <Pressable
+            onPress={() => navigation.navigate("CreatePurchase")}
+            className="rounded-full border p-0.5"
+          >
+            <PlusIcon size={25} color="#000000" />
+          </Pressable>
+        </View>
+
         {loading ? (
           <List width="300" height="300" />
-        ) : (
-          // <PurchaseList purchases={data.purchases} />
+        ) : data.purchases.length > 0 ? (
           data.purchases.map((purchase) => (
             <PurchaseComponent
               item={purchase}
@@ -107,6 +124,8 @@ const Home = ({ navigation }) => {
               toDetailsScreen={toDetails}
             />
           ))
+        ) : (
+          <Text className="my-2">Sin resultados</Text>
         )}
       </ScrollView>
     </SafeAreaView>

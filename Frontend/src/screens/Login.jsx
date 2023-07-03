@@ -44,16 +44,12 @@ const Login = ({ navigation }) => {
 
       const json = await response.json()
       if (response?.ok) {
-        console.log("bien")
-        ToastAndroid.show(json.message, ToastAndroid.SHORT)
+        console.log("bien", json)
         await AsyncStorage.setItem("userInfo", JSON.stringify(json))
         setIsLogged(true)
-        // setTimeout(() => navigation.navigate("Home"), 1500)
-        // toHome()
       } else {
         ToastAndroid.show(json.message, ToastAndroid.SHORT)
         setLoading(false)
-        setIsLogged(true)
       }
       // console.log(json)
     } catch (error) {

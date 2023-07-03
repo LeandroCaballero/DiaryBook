@@ -19,3 +19,23 @@ export const getGroups = async (req, res) => {
 
   res.status(200).json(groups)
 }
+
+export const checkGroupName = async (req, res) => {
+  const { name } = req.body
+  console.log("name", name)
+  const groups = await prisma.group.findFirst({ where: { name: name } })
+
+  const response = groups
+    ? {
+        text: "Ya existe un grupo con el nombre ingresado",
+        color: "red-500",
+        available: false,
+      }
+    : {
+        text: "El nombre esta disponible",
+        color: "green-500",
+        available: true,
+      }
+
+  res.status(200).json(response)
+}

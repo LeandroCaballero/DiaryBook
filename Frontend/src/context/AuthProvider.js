@@ -3,7 +3,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage"
 import { AuthContext } from "./AuthContext"
 
 export const AuthProvider = ({ children }) => {
-  const [userInfo, setUserInfo] = useState()
   const [isLogged, setIsLogged] = useState(false)
 
   useEffect(() => {
@@ -14,7 +13,6 @@ export const AuthProvider = ({ children }) => {
     try {
       let userInfo = await AsyncStorage.getItem("userInfo")
       userInfo = JSON.parse(userInfo)
-      console.log(userInfo)
 
       if (userInfo) {
         const response = await fetch("http://192.168.0.14:3001/status", {
@@ -23,10 +21,11 @@ export const AuthProvider = ({ children }) => {
           },
         })
 
+        // console.log("response", response)
+
         if (response?.ok) {
           const json = await response.json()
           console.log(json)
-          setUserInfo(json)
           setIsLogged(true)
         } else {
           await AsyncStorage.removeItem("userInfo")
@@ -42,6 +41,8 @@ export const AuthProvider = ({ children }) => {
   }
 
   return (
-    <AuthContext.Provider value={{ isLogged }}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={{ isLogged, setIsLogged }}>
+      {children}
+    </AuthContext.Provider>
   )
 }

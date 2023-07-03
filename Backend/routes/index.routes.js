@@ -1,6 +1,10 @@
 import { Router } from "express"
 import { register, login, getStatus } from "../controllers/auth.controller.js"
-import { getGroups, createGroup } from "../controllers/group.controller.js"
+import {
+  getGroups,
+  createGroup,
+  checkGroupName,
+} from "../controllers/group.controller.js"
 import { getProducts } from "../controllers/product.controller.js"
 import { getTest } from "../controllers/test.controller.js"
 
@@ -38,6 +42,7 @@ router.post("/purchase", createPurchase)
 
 //Groups
 router.get("/groups", getGroups)
+router.post("/checkGroupName", checkGroupName)
 
 router.post("/group", createGroup)
 
