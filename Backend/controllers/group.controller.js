@@ -1,28 +1,32 @@
 import { prisma } from "../server/prisma.js"
 
 export const createGroup = async (req, res) => {
-  const { name, users } = req.body
-
-  console.log(name, users)
+  const { name, user } = req.body
 
   const newGroup = await prisma.group.create({
     data: {
       name,
-      Users: { connect: users },
+      Users: { connect: { id: user } },
+      Admins: { connect: { id: user } },
     },
   })
-  res.json(newGroup)
+  res.status(200).json(newGroup)
 }
 
 export const getGroups = async (req, res) => {
-  const groups = await prisma.group.findMany({ include: { Users: true } })
+  const { userId } = req.params
+
+  const groups = await prisma.group.findMany({
+    where: { Users: { some: { id: +userId } } },
+    include: { Users: true, Admins: true, Purchases: true },
+  })
 
   res.status(200).json(groups)
 }
 
 export const checkGroupName = async (req, res) => {
   const { name } = req.body
-  console.log("name", name)
+  // console.log("name", name)
   const groups = await prisma.group.findFirst({ where: { name: name } })
 
   const response = groups
@@ -38,4 +42,12 @@ export const checkGroupName = async (req, res) => {
       }
 
   res.status(200).json(response)
+}
+
+export const checkExistGroup = async (req, res) => {
+  const { name } = req.params
+
+  const group = await prisma.group.findFirst({ where: { name: name } })
+
+  res.status(200).json(group)
 }

@@ -15,7 +15,8 @@ model User {
   email          String
   password       String
   Purchases      Purchase[]
-  Groups         Group[]
+  Groups         Group[]        @relation("Users")
+  Admins         Group[]        @relation("Admins")
   PurchaseItem   PurchaseItem[]
   purchaseItemId Int?
 }
@@ -25,7 +26,8 @@ model Group {
   createdAt DateTime   @default(now()) @db.Timestamp(6)
   updatedAt DateTime   @updatedAt
   name      String
-  Users     User[]
+  Admins    User[]     @relation("Admins")
+  Users     User[]     @relation("Users")
   Purchases Purchase[]
 }
 

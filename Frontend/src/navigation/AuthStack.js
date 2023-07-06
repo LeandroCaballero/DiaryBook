@@ -4,6 +4,7 @@ import Home from "../screens/Home"
 import PurchaseDetails from "../screens/PurchaseDetails"
 import CreatePurchase from "../screens/CreatePurchase"
 import CreateGroup from "../screens/CreateGroup"
+import Group from "../screens/Group"
 
 const Stack = createNativeStackNavigator()
 
@@ -12,6 +13,11 @@ const AuthStack = () => {
     <Stack.Navigator>
       <>
         <Stack.Screen name="Home" component={Home} />
+        <Stack.Screen
+          options={({ route }) => ({ title: route.params.title })}
+          name="Group"
+          component={Group}
+        />
         <Stack.Screen
           options={{ title: "Crear compra" }}
           name="CreatePurchase"

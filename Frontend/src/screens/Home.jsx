@@ -39,17 +39,19 @@ const Home = ({ navigation }) => {
   const fetchData = async () => {
     setLoading(true)
     try {
+      let userInfo = await AsyncStorage.getItem("userInfo")
       const [groups, purchases] = await Promise.all([
-        await fetch("http://192.168.0.14:3001/groups"),
+        await fetch(
+          `http://192.168.0.14:3001/groups/${JSON.parse(userInfo).id}`
+        ),
         await fetch("http://192.168.0.14:3001/purchases"),
       ])
 
       const groupsJSON = await groups.json()
       const purchasesJSON = await purchases.json()
-      let userInfo = await AsyncStorage.getItem("userInfo")
       setUser(JSON.parse(userInfo))
 
-      // console.log("grupos", groupsJSON)
+      console.log("grupos", typeof groupsJSON)
       // console.log("purchases", purchasesJSON)
       setData({ groups: groupsJSON, purchases: purchasesJSON })
     } catch (error) {
@@ -102,7 +104,7 @@ const Home = ({ navigation }) => {
         {loading ? (
           <ActivityIndicator />
         ) : (
-          <CarouselGroups groups={data.groups} />
+          <CarouselGroups groups={data.groups} navigation={navigation} />
         )}
         <View className="flex flex-row justify-between mt-5">
           <Text className="text-lg">Mis últimas compras</Text>

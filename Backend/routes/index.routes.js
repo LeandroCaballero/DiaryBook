@@ -4,6 +4,7 @@ import {
   getGroups,
   createGroup,
   checkGroupName,
+  checkExistGroup,
 } from "../controllers/group.controller.js"
 import { getProducts } from "../controllers/product.controller.js"
 import { getTest } from "../controllers/test.controller.js"
@@ -41,8 +42,9 @@ router.post("/purchase", createPurchase)
 // router.post("/purchase", verifyToken, createPurchase)
 
 //Groups
-router.get("/groups", getGroups)
+router.get("/groups/:userId", getGroups)
 router.post("/checkGroupName", checkGroupName)
+router.get("/checkExistGroup/:id", checkExistGroup)
 
 router.post("/group", createGroup)
 
