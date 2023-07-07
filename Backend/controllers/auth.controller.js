@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
 import { prisma } from "../server/prisma.js"
+import { transporter } from "../server/transporterNodemailer.js"
 
 export const register = async (req, res) => {
   const { name, email, password } = req.body
@@ -9,7 +10,9 @@ export const register = async (req, res) => {
   const oldUser = await prisma.user.findFirst({ where: { email } })
 
   if (oldUser) {
-    return res.status(409).json({ message: "El email ya existe" })
+    return res
+      .status(409)
+      .json({ message: "El email ya se encuentra registrado" })
   }
 
   let encryptedPassword = await bcrypt.hash(password, 10)
@@ -22,7 +25,24 @@ export const register = async (req, res) => {
     },
   })
 
-  // AsyncStorage.setItem('userInfo', JSON.stringify(user));
+  if (user) {
+    // Configura el correo electrónico a enviar
+    const mailOptions = {
+      from: "diarybook.arg@gmail.com",
+      to: email,
+      subject: "Confirmación de cuenta",
+      text: "Contenido del correo electrónico",
+    }
+
+    // Envía el correo electrónico
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.log(error)
+      } else {
+        console.log("Correo electrónico enviado: " + info.response)
+      }
+    })
+  }
 
   // return new user
   res.json({

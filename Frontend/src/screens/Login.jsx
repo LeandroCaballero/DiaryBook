@@ -77,9 +77,7 @@ const Login = ({ navigation }) => {
   // }
 
   const toRegister = () => {
-    console.log("ANTES", isLogged)
-    setIsLogged(!isLogged)
-    // navigation.navigate("Register")
+    navigation.navigate("Register")
   }
 
   // const toHome = () => {

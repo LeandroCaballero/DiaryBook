@@ -11,6 +11,7 @@ import {
 import React, { useState } from "react"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import { useNavigation } from "@react-navigation/native"
+import { zod_registerUser } from "../zod/zod_auth"
 
 const Register = () => {
   const navigation = useNavigation()
@@ -18,39 +19,20 @@ const Register = () => {
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [confirmPassword, setConfirmPassword] = useState("")
+
   const [loading, setLoading] = useState(false)
-
-  // const createAccount = async () => {
-  //   setLoading(true)
-
-  //   fetch("http://192.168.0.14:3001/register", {
-  //     method: "POST", // or 'PUT'
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //     body: JSON.stringify({
-  //       name,
-  //       email,
-  //       password,
-  //     }),
-  //   })
-  //     .then((response) => {
-  //       // console.log(response)
-  //       response.json()
-  //       setLoading(false)
-  //     })
-  //     .then((data) => {
-  //       console.log("Success:", data)
-  //       setLoading(false)
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error:", error)
-  //       setLoading(false)
-  //     })
-  // }
 
   const register = async () => {
     try {
+      setLoading(true)
+      // zod_registerUser.parse({
+      //   name,
+      //   email,
+      //   password,
+      //   confirmPassword,
+      // })
+
       const response = await fetch("http://192.168.0.14:3001/register", {
         method: "POST", // or 'PUT'
         headers: {
@@ -66,9 +48,10 @@ const Register = () => {
       const json = await response.json()
       if (response?.ok) {
         ToastAndroid.show("Registro exitoso, inicie sesión", ToastAndroid.LONG)
-        setTimeout(() => navigation.navigate("Login"), 1500)
+        navigation.navigate("Login")
+        // setTimeout(() => navigation.navigate("Login"), 1500)
       } else {
-        ToastAndroid.show("El email ya existe!", ToastAndroid.SHORT)
+        ToastAndroid.show(json.message, ToastAndroid.SHORT)
       }
       console.log(json)
     } catch (error) {
@@ -80,10 +63,10 @@ const Register = () => {
     }
   }
 
-  const getStorage = async () => {
-    const value = await AsyncStorage.getItem("@token")
-    console.log(value)
-  }
+  // const getStorage = async () => {
+  //   const value = await AsyncStorage.getItem("@token")
+  //   console.log(value)
+  // }
 
   return (
     <SafeAreaView className="bg-white h-full flex items-center justify-start">
@@ -107,7 +90,7 @@ const Register = () => {
             }}
           ></TextInput>
           <TextInput
-            className="border-b mb-10 border-black p-2"
+            className="border-b border-black p-2"
             placeholder="Contraseña"
             autoCorrect={false}
             secureTextEntry={true}
@@ -115,11 +98,23 @@ const Register = () => {
               setPassword(e)
             }}
           ></TextInput>
+          {/* <TextInput
+            className="border-b mb-10 border-black p-2"
+            placeholder="Confirmar contraseña"
+            autoCorrect={false}
+            secureTextEntry={true}
+            onChangeText={(e) => {
+              setConfirmPassword(e)
+            }}
+          ></TextInput> */}
           <Button title="Registarse" onPress={register} />
-          <Button title="Token" onPress={getStorage} />
-          {/* <Text className="text-red-800" onPress={() => navigation.goBack()}>
-            Iniciar sesión
-          </Text> */}
+          {/* <Button title="Token" onPress={getStorage} /> */}
+          <View className="flex flex-row gap-x-1">
+            <Text>Tienes una cuenta?</Text>
+            <Text className="text-red-800" onPress={() => navigation.goBack()}>
+              Iniciar sesión
+            </Text>
+          </View>
           {loading && <ActivityIndicator size="large" color="#0000ff" />}
         </View>
       </View>
