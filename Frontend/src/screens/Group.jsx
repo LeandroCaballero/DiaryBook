@@ -3,11 +3,13 @@ import React, { useEffect, useState } from "react"
 import { SafeAreaView } from "react-native"
 import { PencilSquareIcon } from "react-native-heroicons/outline"
 import AsyncStorage from "@react-native-async-storage/async-storage"
+import ModalEditMembers from "../components/Group/ModalEditMembers"
 
 const Group = ({ route }) => {
   const { group } = route.params
 
   const [user, setUser] = useState()
+  const [showEditMemberModal, setShowEditMemberModal] = useState(false)
 
   useEffect(() => {
     AsyncStorage.getItem("userInfo").then((user) => setUser(JSON.parse(user)))
@@ -21,7 +23,7 @@ const Group = ({ route }) => {
           {group.Admins.some((admin) => admin.id == user?.id) && (
             <TouchableOpacity
               className="border border-green-500 rounded-lg mb-3 py-2 px-2"
-              //   onPress={() => setModalVisible(!modalVisible)}
+              onPress={() => setShowEditMemberModal(true)}
             >
               <PencilSquareIcon size={20} color="#000000" />
             </TouchableOpacity>
@@ -46,6 +48,12 @@ const Group = ({ route }) => {
         ) : (
           <Text>Sin resultados</Text>
         )}
+
+        <ModalEditMembers
+          show={showEditMemberModal}
+          closeModal={() => setShowEditMemberModal(false)}
+          group={group}
+        />
       </ScrollView>
     </SafeAreaView>
   )
