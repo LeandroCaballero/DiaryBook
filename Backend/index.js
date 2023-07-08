@@ -19,6 +19,7 @@ app.use(express.json())
 app.use(cors())
 app.use(fileupload())
 app.use(router)
+app.use(express.static("public"))
 
 const port = process.env.PORT || "8080"
 

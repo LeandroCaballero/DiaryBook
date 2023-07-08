@@ -1,5 +1,10 @@
 import { Router } from "express"
-import { register, login, getStatus } from "../controllers/auth.controller.js"
+import {
+  register,
+  login,
+  getStatus,
+  confirmEmail,
+} from "../controllers/auth.controller.js"
 import {
   getGroups,
   createGroup,
@@ -22,7 +27,8 @@ const router = Router()
 //Auth
 router.post("/register", register)
 router.post("/login", login)
-router.get("/status", getStatus)
+router.get("/status", verifyToken, getStatus)
+router.get("/confirmEmail/:id/:token", confirmEmail)
 
 router.get(["/", "/test/:name"], (req, res) => {
   let greeting = "<h1>Hello From Node on Fly!</h1>"
