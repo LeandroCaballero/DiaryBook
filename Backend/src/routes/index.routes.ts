@@ -4,23 +4,23 @@ import {
   login,
   getStatus,
   confirmEmail,
-} from "../controllers/auth.controller.js"
+} from "../controllers/auth.controller"
 import {
   getGroups,
   createGroup,
   checkGroupName,
   checkExistGroup,
-} from "../controllers/group.controller.js"
-import { getProducts } from "../controllers/product.controller.js"
-import { getTest } from "../controllers/test.controller.js"
+} from "../controllers/group.controller"
+import { getProducts } from "../controllers/product.controller"
+import { getTest } from "../controllers/test.controller"
 
 import {
   getPurchases,
   getOnePruchase,
   createPurchase,
-} from "../controllers/purchase.controller.js"
+} from "../controllers/purchase.controller"
 
-import { verifyToken } from "../middleware/auth.js"
+import { verifyToken } from "../middleware/auth"
 
 const router = Router()
 
@@ -31,7 +31,7 @@ router.get("/status", verifyToken, getStatus)
 router.get("/confirmEmail/:id/:token", confirmEmail)
 
 router.get(["/", "/test/:name"], (req, res) => {
-  let greeting = "<h1>Hello From Node on Fly!</h1>"
+  let greeting = "<h1>Hello From Node with Express!</h1>"
   let name = req.params["name"]
   if (name) {
     res.send(greeting + "</br>and hello to " + name)
@@ -42,7 +42,7 @@ router.get(["/", "/test/:name"], (req, res) => {
 
 // Purchases
 router.get("/purchases", getPurchases)
-router.post("/test", getTest)
+// router.post("/test", getTest)
 router.get("/purchase/:id", getOnePruchase)
 router.post("/purchase", createPurchase)
 // router.post("/purchase", verifyToken, createPurchase)
@@ -55,6 +55,6 @@ router.get("/checkExistGroup/:id", checkExistGroup)
 router.post("/group", createGroup)
 
 // Products
-router.get("/products/:id", getProducts)
+// router.get("/products/:id", getProducts)
 
 export default router

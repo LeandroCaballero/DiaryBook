@@ -5,10 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon index.js",
+    "dev": "nodemon src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "type": "module",
   "keywords": [],
   "author": "Leandro Caballero",
   "license": "ISC",
@@ -30,7 +29,9 @@
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.2",
+    "@types/cors": "^2.8.13",
     "@types/express": "^4.17.17",
+    "@types/express-fileupload": "^1.4.1",
     "@types/jsonwebtoken": "^9.0.1",
     "@types/node": "^18.15.3",
     "nodemon": "^2.0.21",

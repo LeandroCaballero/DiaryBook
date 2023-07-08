@@ -1,7 +1,8 @@
-import { prisma } from "../server/prisma.js"
+import { Request, Response } from "express"
+import prisma from "../server/prisma"
 import axios from "axios"
 
-export const getTest = async (req, res) => {
+export const getTest = async (req: Request, res: Response) => {
   console.log("Empieza")
 
   let token = "378ccf5fd6742e91d73427dbfff882c5"
@@ -28,7 +29,7 @@ export const getTest = async (req, res) => {
       .status(200)
       .json(
         response.data.document.inference.prediction.line_items.filter(
-          (el) => el.confidence >= 0.85
+          (el: any) => el.confidence >= 0.85
         )
       )
     // console.log(response.data.document)

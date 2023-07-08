@@ -1,6 +1,7 @@
-import { prisma } from "../server/prisma.js"
+import { Request, Response } from "express"
+import prisma from "../server/prisma"
 
-export const createGroup = async (req, res) => {
+export const createGroup = async (req: Request, res: Response) => {
   const { name, user } = req.body
 
   const newGroup = await prisma.group.create({
@@ -13,7 +14,7 @@ export const createGroup = async (req, res) => {
   res.status(200).json(newGroup)
 }
 
-export const getGroups = async (req, res) => {
+export const getGroups = async (req: Request, res: Response) => {
   const { userId } = req.params
 
   const groups = await prisma.group.findMany({
@@ -24,7 +25,7 @@ export const getGroups = async (req, res) => {
   res.status(200).json(groups)
 }
 
-export const checkGroupName = async (req, res) => {
+export const checkGroupName = async (req: Request, res: Response) => {
   const { name } = req.body
   // console.log("name", name)
   const groups = await prisma.group.findFirst({ where: { name: name } })
@@ -44,7 +45,7 @@ export const checkGroupName = async (req, res) => {
   res.status(200).json(response)
 }
 
-export const checkExistGroup = async (req, res) => {
+export const checkExistGroup = async (req: Request, res: Response) => {
   const { name } = req.params
 
   const group = await prisma.group.findFirst({ where: { name: name } })

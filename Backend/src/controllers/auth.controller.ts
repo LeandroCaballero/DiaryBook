@@ -1,13 +1,14 @@
 import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
-import { prisma } from "../server/prisma.js"
+import prisma from "../server/prisma"
 import sgMail from "@sendgrid/mail"
 import crypto from "crypto"
+import { Request, Response } from "express"
 
 // SENDGRID_API_KEY
-sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+sgMail.setApiKey(process.env.SENDGRID_API_KEY || "")
 
-export const register = async (req, res) => {
+export const register = async (req: Request, res: Response) => {
   const { name, email, password } = req.body
   // console.log("Entra en register", req.body)
 
@@ -64,7 +65,7 @@ export const register = async (req, res) => {
   res.status(200).json({ message: "Creado con éxito" })
 }
 
-export const login = async (req, res) => {
+export const login = async (req: Request, res: Response) => {
   const { email, password } = req.body
   console.log(email, password)
 
@@ -79,7 +80,7 @@ export const login = async (req, res) => {
   if (await bcrypt.compare(password, existUser.password)) {
     const token = jwt.sign(
       { user_id: existUser.id, email },
-      process.env.TOKEN_KEY,
+      process.env.TOKEN_KEY || "",
       {
         expiresIn: "7d",
       }
@@ -96,11 +97,11 @@ export const login = async (req, res) => {
   }
 }
 
-export const getStatus = (req, res) => {
+export const getStatus = (req: Request, res: Response) => {
   res.status(200).json({ message: "Token valid" })
 }
 
-export const confirmEmail = async (req, res) => {
+export const confirmEmail = async (req: Request, res: Response) => {
   const { id, token } = req.params
 
   const checkInfoUser = await prisma.user.findFirst({

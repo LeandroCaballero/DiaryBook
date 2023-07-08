@@ -1,6 +1,7 @@
-import { prisma } from "../server/prisma.js"
+import { Request, Response } from "express"
+import prisma from "../server/prisma"
 
-export const getPurchases = async (req, res) => {
+export const getPurchases = async (req: Request, res: Response) => {
   try {
     const purchases = await prisma.purchase.findMany({
       include: { PurchaseItems: true },
@@ -12,12 +13,12 @@ export const getPurchases = async (req, res) => {
   }
 }
 
-export const createPurchase = async (req, res) => {
+export const createPurchase = async (req: Request, res: Response) => {
   console.log(req.body)
   const { dateBuy, groupId, buyerId, purchaseItems } = req.body
 
   const newPurchaseItems = await Promise.all(
-    purchaseItems.map(async (item) => {
+    purchaseItems.map(async (item: any) => {
       const newPurchaseItem = await prisma.purchaseItem.create({
         data: {
           price: item.price,
@@ -26,12 +27,13 @@ export const createPurchase = async (req, res) => {
           total: item.shared
             ? (item.price * item.quantity) / 2
             : item.price * item.quantity,
-          Product: {
-            connectOrCreate: {
-              where: { id: +item.product.id },
-              create: { name: item.product.name },
-            },
-          },
+          productName: item.productName,
+          // Product: {
+          //   connectOrCreate: {
+          //     where: { id: +item.product.id },
+          //     create: { name: item.product.name },
+          //   },
+          // },
         },
       })
 
@@ -72,10 +74,10 @@ export const createPurchase = async (req, res) => {
   res.json(newPurchase)
 }
 
-export const getOnePruchase = async (req, res) => {
+export const getOnePruchase = async (req: Request, res: Response) => {
   const purchase = await prisma.purchase.findFirst({
     where: { id: +req.params.id },
-    include: { PurchaseItems: { include: { Product: true } } },
+    include: { PurchaseItems: true },
   })
 
   res.status(200).json(purchase)

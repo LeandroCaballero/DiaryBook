@@ -1,18 +1,17 @@
-import express from "express"
+import express, { Request, Response } from "express"
 import cors from "cors"
-import router from "./routes/index.routes.js"
+import router from "./routes/index.routes"
 import dotenv from "dotenv"
 import fileupload from "express-fileupload"
 import { fileURLToPath } from "url"
 import path, { dirname } from "path"
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
+// const __dirname = dirname(fileURLToPath(import.meta.url))
 
 dotenv.config()
 const app = express()
 
-app.set("views", path.join(__dirname, "views"))
+// app.set("views", path.join(__dirname, "views"))
 app.set("view engine", "ejs")
 
 app.use(express.json())
@@ -23,6 +22,6 @@ app.use(express.static("public"))
 
 const port = process.env.PORT || "8080"
 
-app.listen(port, (req, res) =>
+app.listen(port, () =>
   console.log(`Server running on port ${process.env.PORT}`)
 )
