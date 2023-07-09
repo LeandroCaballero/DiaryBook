@@ -78,6 +78,10 @@ export const login = async (req: Request, res: Response) => {
   }
 
   if (await bcrypt.compare(password, existUser.password)) {
+    if (!existUser.confirmEmail) {
+      return res.status(403).json({ message: "Su usuario no esta confimado" })
+    }
+
     const token = jwt.sign(
       { user_id: existUser.id, email },
       process.env.TOKEN_KEY || "",
