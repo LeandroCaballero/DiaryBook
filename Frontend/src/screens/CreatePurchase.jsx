@@ -180,7 +180,6 @@ const CreatePurchase = () => {
       // console.log(responseJson)
 
       const newInfo = responseJson.map((el) => {
-        // console.log(el)
         return {
           name: el.description,
           price: el.unit_price,
