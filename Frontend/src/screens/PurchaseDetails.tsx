@@ -11,9 +11,14 @@ import {
 import React, { useEffect, useLayoutEffect, useState } from "react"
 import dayjs from "dayjs"
 import "dayjs/locale/es"
+import { NativeStackScreenProps } from "@react-navigation/native-stack"
+import { AuthStackParamList } from "../types/AuthStackParamList"
+import { Purchase } from "../interfaces/prisma.interfaces"
 
-const PurchaseDetails = ({ route }) => {
-  const [data, setData] = useState()
+type Props = NativeStackScreenProps<AuthStackParamList, "PurchaseDetails">
+
+const PurchaseDetails = ({ route }: Props) => {
+  const [data, setData] = useState<Purchase>()
   const [loading, setLoading] = useState(false)
   const [modalVisible, setModalVisible] = useState(false)
 
@@ -27,7 +32,7 @@ const PurchaseDetails = ({ route }) => {
     // console.log(route.params.purchase)
     try {
       const response = await fetch(
-        `http://192.168.0.14:3001/purchase/${route.params.purchaseID}`
+        `http://192.168.0.14:3001/purchase/${route.params.purchaseId}`
       )
       const json = await response.json()
       // console.log("en detalles", json)
@@ -61,7 +66,8 @@ const PurchaseDetails = ({ route }) => {
             className="border border-white mb-3 py-2"
             onPress={() => setModalVisible(!modalVisible)}
           >
-            <Text className="text-white">{purchase.Product.name}</Text>
+            {/* <Text className="text-white">{purchase.Product.name}</Text> */}
+            <Text>Test</Text>
           </TouchableOpacity>
         ))
       )}

@@ -11,18 +11,30 @@ import ContentLoader, { List } from "react-content-loader/native"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { PlusIcon } from "react-native-heroicons/outline"
 import AsyncStorage from "@react-native-async-storage/async-storage"
+import { UserCircleIcon } from "react-native-heroicons/outline"
 
 import CarouselGroups from "../components/Home/CarouselGroups"
 import PurchaseComponent from "../components/Home/PurchaseComponent"
 import { AuthContext } from "../context/AuthContext"
+import { NativeStackScreenProps } from "@react-navigation/native-stack"
+import { AuthStackParamList } from "../types/AuthStackParamList"
+import { Group, Purchase } from "../interfaces/prisma.interfaces"
 
-import { UserCircleIcon } from "react-native-heroicons/outline"
+type Props = NativeStackScreenProps<AuthStackParamList, "Home">
 
-const Home = ({ navigation }) => {
+const Home = ({ navigation }: Props) => {
   const { setIsLogged } = useContext(AuthContext)
 
-  const [data, setData] = useState({ groups: [], purchases: [] })
-  const [user, setUser] = useState()
+  const [data, setData] = useState<{
+    groups: Group[]
+    purchases: Purchase[]
+  }>({ groups: [], purchases: [] })
+  const [user, setUser] = useState<{
+    id: number
+    name: string
+    email: string
+    token: string
+  }>()
   const [loading, setLoading] = useState(false)
 
   useLayoutEffect(() => {
@@ -39,7 +51,7 @@ const Home = ({ navigation }) => {
   const fetchData = async () => {
     setLoading(true)
     try {
-      let userInfo = await AsyncStorage.getItem("userInfo")
+      let userInfo = (await AsyncStorage.getItem("userInfo")) || ""
       const [groups, purchases] = await Promise.all([
         await fetch(
           `http://192.168.0.14:3001/groups/${JSON.parse(userInfo).id}`
@@ -47,12 +59,13 @@ const Home = ({ navigation }) => {
         await fetch("http://192.168.0.14:3001/purchases"),
       ])
 
-      const groupsJSON = await groups.json()
-      const purchasesJSON = await purchases.json()
+      const groupsJSON: Group[] = await groups.json()
+      const purchasesJSON: Purchase[] = await purchases.json()
+
       setUser(JSON.parse(userInfo))
 
-      console.log("grupos", typeof groupsJSON)
-      // console.log("purchases", purchasesJSON)
+      // console.log("grupos", typeof groupsJSON)
+
       setData({ groups: groupsJSON, purchases: purchasesJSON })
     } catch (error) {
       console.log(error)
@@ -61,13 +74,13 @@ const Home = ({ navigation }) => {
     }
   }
 
-  const toDetails = () => {
-    navigation.navigate("PurchaseDetails")
+  const toDetails = (id: number) => {
+    navigation.navigate("PurchaseDetails", { purchaseId: id })
   }
 
   const loggout = async () => {
     await AsyncStorage.removeItem("userInfo")
-    setIsLogged(false)
+    setIsLogged && setIsLogged(false)
   }
 
   return (
@@ -123,7 +136,7 @@ const Home = ({ navigation }) => {
             <PurchaseComponent
               item={purchase}
               key={purchase.id}
-              toDetailsScreen={toDetails}
+              navigation={navigation}
             />
           ))
         ) : (

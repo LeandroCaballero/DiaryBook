@@ -5,8 +5,9 @@ import PurchaseDetails from "../screens/PurchaseDetails"
 import CreatePurchase from "../screens/CreatePurchase"
 import CreateGroup from "../screens/CreateGroup"
 import Group from "../screens/Group"
+import { AuthStackParamList } from "../types/AuthStackParamList"
 
-const Stack = createNativeStackNavigator()
+const Stack = createNativeStackNavigator<AuthStackParamList>()
 
 const AuthStack = () => {
   return (
@@ -14,7 +15,7 @@ const AuthStack = () => {
       <>
         <Stack.Screen name="Home" component={Home} />
         <Stack.Screen
-          options={({ route }) => ({ title: route.params.title })}
+          options={({ route }) => ({ title: route.params?.title })}
           name="Group"
           component={Group}
         />

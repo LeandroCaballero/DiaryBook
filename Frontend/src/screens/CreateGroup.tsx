@@ -12,18 +12,23 @@ import AsyncStorage from "@react-native-async-storage/async-storage"
 import { zod_checkNameGroup } from "../zod/zod_createGroup"
 // Mantén tus compras bajo control
 
-const CreateGroup = ({ navigation }) => {
-  const [user, setUser] = useState()
+const CreateGroup = ({ navigation }: { navigation: any }) => {
+  const [user, setUser] = useState<{
+    id: number
+    name: string
+    email: string
+    token: string
+  }>()
   const [loading, setLoading] = useState(false)
-  const [nameGroup, setNameGroup] = useState()
-  const [textAvailability, setTextAvailability] = useState({
-    text: null,
-    color: null,
-    available: false,
-  })
+  const [nameGroup, setNameGroup] = useState<string>()
+  const [textAvailability, setTextAvailability] = useState<{
+    text: string
+    color: string
+    available: boolean
+  }>()
   const [error, setError] = useState()
 
-  const [numberGroup, setNumberGroup] = useState()
+  const [numberGroup, setNumberGroup] = useState<string>()
 
   useEffect(() => {
     getUser()
@@ -32,7 +37,7 @@ const CreateGroup = ({ navigation }) => {
   const getUser = async () => {
     let userInfo = await AsyncStorage.getItem("userInfo")
     // console.log("usuario", userInfo)
-    setUser(JSON.parse(userInfo))
+    setUser(JSON.parse(userInfo || ""))
   }
 
   useLayoutEffect(() => {
@@ -48,7 +53,7 @@ const CreateGroup = ({ navigation }) => {
       const response = await fetch("http://192.168.0.14:3001/checkGroupName", {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${user.token}`,
+          Authorization: `Bearer ${user?.token}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -60,10 +65,14 @@ const CreateGroup = ({ navigation }) => {
       // console.log("Respuesta", json)
 
       if (response?.ok) {
-        setTextAvailability({ text: json.text, color: json.color })
+        setTextAvailability({
+          text: json.text,
+          color: json.color,
+          available: true,
+        })
         setError(undefined)
       }
-    } catch (error) {
+    } catch (error: any) {
       setError(JSON.parse(error.message)[0].message)
       setTextAvailability(undefined)
     } finally {
@@ -79,7 +88,7 @@ const CreateGroup = ({ navigation }) => {
         {
           method: "GET",
           headers: {
-            Authorization: `Bearer ${user.token}`,
+            Authorization: `Bearer ${user?.token}`,
           },
         }
       )
@@ -104,19 +113,19 @@ const CreateGroup = ({ navigation }) => {
       const response = await fetch("http://192.168.0.14:3001/group", {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${user.token}`,
+          Authorization: `Bearer ${user?.token}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           name: nameGroup,
-          user: user.id,
+          user: user?.id,
         }),
       })
 
       if (response?.ok) {
         console.log("todo ok")
       }
-    } catch (error) {
+    } catch (error: any) {
       setError(JSON.parse(error?.message)[0]?.message)
       setTextAvailability(undefined)
     } finally {

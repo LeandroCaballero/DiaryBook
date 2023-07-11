@@ -12,11 +12,15 @@ import React, { useLayoutEffect, useState, useContext } from "react"
 import { useNavigation } from "@react-navigation/native"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import { AuthContext } from "../context/AuthContext"
+import { NativeStackScreenProps } from "@react-navigation/native-stack"
+import { AuthenticationStackParamList } from "../types/AuthenticationStackParamList"
 
 // Mantén tus compras bajo control
 
-const Login = ({ navigation }) => {
-  const { setIsLogged, isLogged } = useContext(AuthContext)
+type Props = NativeStackScreenProps<AuthenticationStackParamList, "Login">
+
+const Login = ({ navigation }: Props) => {
+  const { setIsLogged } = useContext(AuthContext)
 
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -46,7 +50,8 @@ const Login = ({ navigation }) => {
       if (response?.ok) {
         console.log("bien", json)
         await AsyncStorage.setItem("userInfo", JSON.stringify(json))
-        setIsLogged(true)
+
+        setIsLogged && setIsLogged(true)
       } else {
         ToastAndroid.show(json.message, ToastAndroid.SHORT)
         setLoading(false)

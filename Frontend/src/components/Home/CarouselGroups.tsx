@@ -1,7 +1,18 @@
 import { View, Text, FlatList, TouchableOpacity } from "react-native"
 import React from "react"
+import { Group } from "../../interfaces/prisma.interfaces"
 
-const GroupItem = ({ group, navigation }) => {
+interface CarouselGroupsProps {
+  groups: Group[]
+  navigation: any
+}
+
+interface GroupItemProps {
+  group: Group
+  navigation: any
+}
+
+const GroupItem = ({ group, navigation }: GroupItemProps) => {
   return (
     <View>
       <TouchableOpacity
@@ -19,7 +30,7 @@ const GroupItem = ({ group, navigation }) => {
   )
 }
 
-const CarouselGroups = ({ groups, navigation }) => {
+const CarouselGroups = ({ groups, navigation }: CarouselGroupsProps) => {
   // console.log("desde el carrousel", groups)
   return (
     <View className="my-2">
@@ -31,7 +42,7 @@ const CarouselGroups = ({ groups, navigation }) => {
           renderItem={({ item }) => (
             <GroupItem navigation={navigation} group={item} />
           )}
-          keyExtractor={(item) => item.id}
+          // keyExtractor={(item) => item.id}
         />
       ) : (
         <Text>Sin resultados</Text>

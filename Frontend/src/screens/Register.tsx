@@ -12,10 +12,12 @@ import React, { useState } from "react"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import { useNavigation } from "@react-navigation/native"
 import { zod_registerUser } from "../zod/zod_auth"
+import { AuthenticationStackParamList } from "../types/AuthenticationStackParamList"
+import { NativeStackScreenProps } from "@react-navigation/native-stack"
 
-const Register = () => {
-  const navigation = useNavigation()
+type Props = NativeStackScreenProps<AuthenticationStackParamList, "Register">
 
+const Register = ({ navigation }: Props) => {
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")

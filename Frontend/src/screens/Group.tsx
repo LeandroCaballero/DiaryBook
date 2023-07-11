@@ -4,15 +4,26 @@ import { SafeAreaView } from "react-native"
 import { PencilSquareIcon } from "react-native-heroicons/outline"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import ModalEditMembers from "../components/Group/ModalEditMembers"
+import { AuthStackParamList } from "../types/AuthStackParamList"
+import { NativeStackScreenProps } from "@react-navigation/native-stack"
 
-const Group = ({ route }) => {
+type Props = NativeStackScreenProps<AuthStackParamList, "Group">
+
+const Group = ({ route }: Props) => {
   const { group } = route.params
 
-  const [user, setUser] = useState()
+  const [user, setUser] = useState<{
+    id: number
+    name: string
+    email: string
+    token: string
+  }>()
   const [showEditMemberModal, setShowEditMemberModal] = useState(false)
 
   useEffect(() => {
-    AsyncStorage.getItem("userInfo").then((user) => setUser(JSON.parse(user)))
+    AsyncStorage.getItem("userInfo").then((user) =>
+      setUser(JSON.parse(user || ""))
+    )
   }, [])
 
   return (

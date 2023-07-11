@@ -14,15 +14,12 @@ const zod_registerUser = z.object({
   password: z
     .string({ required_error: "Ingrese un correo" })
     .min(8, { message: "Mínimo de 8 caracteres" }),
-  confirmPassword: z.string().superRefine(({ confirmPassword }, ctx) => {
-    if (confirmPassword == password) {
-      ctx.addIssue({
-        code: "custom",
-        message: "Las contraseñas no coinciden",
-        path: ["confirmPassword"],
-      })
-    }
-  }),
+  confirmPassword: z
+    .string()
+    .refine((value) => value === zod_registerUser.password, {
+      message: "Las contraseñas no coinciden",
+      path: ["confirmPassword"],
+    }),
 })
 
 export { zod_registerUser }
