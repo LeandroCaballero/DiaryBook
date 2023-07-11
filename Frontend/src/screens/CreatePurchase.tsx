@@ -27,30 +27,39 @@ import {
   ArrowLeftIcon,
 } from "react-native-heroicons/outline"
 import { SafeAreaView } from "react-native-safe-area-context"
+import { Group, Purchase, PurchaseItem } from "../interfaces/prisma.interfaces"
+import { NewPurchaseItem } from "../interfaces/createPurchases.interfaces"
 
 const CreatePurchase = () => {
   const [date, setDate] = useState(new Date())
-  const [mode, setMode] = useState("date")
+  // const [mode, setMode] = useState("date")
   const [showCalendar, setShowCalendar] = useState(false)
 
   // Camera
-  const [cameraRef, setCameraRef] = useState(null)
-  const [photoUri, setPhotoUri] = useState(null)
+  const [cameraRef, setCameraRef] = useState<Camera | null>()
+  const [photoUri, setPhotoUri] = useState<string | undefined>()
   const [type, setType] = useState(CameraType.back)
   const [permission, requestPermission] = Camera.useCameraPermissions()
   const [showCamera, setShowCamera] = useState(false)
   const [showPreviewModal, setShowPreviewModal] = useState(false)
 
   const [showNewPurchaseItem, setShowNewPurchaseItem] = useState(false)
-  const [newPurchaseItem, setNewPurchaseItem] = useState({
+  const [newPurchaseItem, setNewPurchaseItem] = useState<NewPurchaseItem>({
+    name: "",
     quantity: "0",
     shared: false,
     price: "0",
   })
 
-  const [data, setData] = useState({
-    groupId: null,
-    buyerId: null,
+  const [data, setData] = useState<{
+    groupId?: number
+    buyerId?: number
+    purchaseItems: NewPurchaseItem[]
+    purchases?: Purchase[]
+    name: string
+    dateBuy: string
+    groups?: Group[]
+  }>({
     purchaseItems: [],
     name: "",
     dateBuy: "",
@@ -76,8 +85,8 @@ const CreatePurchase = () => {
         await fetch("http://192.168.0.14:3001/purchases"),
       ])
 
-      const groupsJSON = await groups.json()
-      const purchasesJSON = await purchases.json()
+      const groupsJSON: Group[] = await groups.json()
+      const purchasesJSON: Purchase[] = await purchases.json()
 
       setData({ ...data, groups: groupsJSON, purchases: purchasesJSON })
     } catch (error) {
@@ -87,10 +96,10 @@ const CreatePurchase = () => {
     }
   }
 
-  const onChange = (event, selectedDate) => {
-    const currentDate = selectedDate
+  const onChangeDate = (selectedDate: Date) => {
+    // const currentDate = selectedDate
+    setDate(selectedDate)
     setShowCalendar(false)
-    setDate(currentDate)
   }
 
   const showDatepicker = () => {
@@ -114,13 +123,14 @@ const CreatePurchase = () => {
 
   const clearNewPurchaseItem = () => {
     setNewPurchaseItem({
+      name: "",
       quantity: "0",
       shared: false,
       price: "0",
     })
   }
 
-  const deletePurchaceItem = (index) => {
+  const deletePurchaceItem = (index: number) => {
     console.log(index)
     setData({
       ...data,
@@ -179,7 +189,7 @@ const CreatePurchase = () => {
       const responseJson = await response.json()
       // console.log(responseJson)
 
-      const newInfo = responseJson.map((el) => {
+      const newInfo = responseJson.map((el: any) => {
         return {
           name: el.description,
           price: el.unit_price,
@@ -248,8 +258,8 @@ const CreatePurchase = () => {
           <DateTimePicker
             testID="dateTimePicker"
             value={date}
-            mode={mode}
-            onChange={onChange}
+            mode="date"
+            onChange={() => onChangeDate(date)}
           />
         )}
 
@@ -394,7 +404,7 @@ const CreatePurchase = () => {
               resizeMode="stretch"
               className="h-5/6 flex flex-row justify-between"
               source={{
-                uri: photoUri,
+                uri: photoUri || "",
               }}
             >
               <Pressable
