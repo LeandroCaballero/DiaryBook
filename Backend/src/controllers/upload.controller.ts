@@ -1,36 +1,36 @@
-import aws from "aws-sdk"
+import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3"
+
 import { Request, Response } from "express"
 
-const s3 = new aws.S3({
-  accessKeyId: process.env.accessKeyId,
-  secretAccessKey: process.env.secretAccessKey,
-})
-
 export const uploadLogo = async (req: any, res: Response) => {
-  let path = ""
+  const client = new S3Client({
+    credentials: {
+      accessKeyId: process.env.accessKeyId || "",
+      secretAccessKey: process.env.secretAccessKey || "",
+    },
+    region: "sa-east-1",
+  })
+
   const id = req.body.id
-  const formato = req.body.formato
   const imagen = req.files?.foto.data
   const type = req.body.type
 
-  if (type == "logo") {
-    path = `Logos/${id}.${formato}`
-  } else {
-    path = `FotoPerfil/${id}.${formato}`
-  }
+  // console.log(imagen)
 
-  var paramPut = {
-    Bucket: "onechancebucketfinal",
-    ContentType: "image/jpg",
+  const command = new PutObjectCommand({
+    Bucket: "diarybookfiles",
+    Key: `Logos/${id}.jpg`,
+    Body: imagen,
     ACL: "public-read",
-    Key: path, //Aca se coloca el nombre que va a aparecer en s3
-    Body: imagen, //Lo que queremos enviar
-  }
-
-  s3.putObject(paramPut, (err, data) => {
-    if (err) throw err
-    console.log(data)
+    ContentType: "image/jpg",
   })
 
-  res.status(200).send("OK")
+  try {
+    const response = await client.send(command)
+  } catch (err) {
+    console.error(err)
+    return res.status(500).send("Algo falló")
+  }
+
+  return res.status(200).send("OK")
 }
