@@ -35,7 +35,7 @@ export const AuthProvider = ({ children }: Props) => {
 
         if (response?.ok) {
           const json = await response.json()
-          console.log(json)
+          // console.log(json)
           setIsLogged(true)
         } else {
           await AsyncStorage.removeItem("userInfo")
@@ -43,7 +43,7 @@ export const AuthProvider = ({ children }: Props) => {
         }
       }
     } catch (e) {
-      console.log(`is logged in error ${e}`)
+      // console.log(`is logged in error ${e}`)
     }
   }
 

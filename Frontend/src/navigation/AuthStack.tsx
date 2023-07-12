@@ -5,7 +5,7 @@ import PurchaseDetails from "../screens/PurchaseDetails"
 import CreatePurchase from "../screens/CreatePurchase"
 import CreateGroup from "../screens/CreateGroup"
 import Group from "../screens/Group"
-import { AuthStackParamList } from "../types/AuthStackParamList"
+import { AuthStackParamList } from "../types"
 
 const Stack = createNativeStackNavigator<AuthStackParamList>()
 

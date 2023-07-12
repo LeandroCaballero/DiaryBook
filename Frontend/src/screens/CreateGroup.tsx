@@ -97,10 +97,10 @@ const CreateGroup = ({ navigation }: { navigation: any }) => {
       // console.log("Respuesta", json)
 
       if (response?.ok) {
-        console.log("respuesta", json)
+        // console.log("respuesta", json)
       }
     } catch (error) {
-      console.log(error)
+      // console.log(error)
     }
   }
 

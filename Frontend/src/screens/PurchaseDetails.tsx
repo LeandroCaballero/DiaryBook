@@ -12,7 +12,7 @@ import React, { useEffect, useLayoutEffect, useState } from "react"
 import dayjs from "dayjs"
 import "dayjs/locale/es"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
-import { AuthStackParamList } from "../types/AuthStackParamList"
+import { AuthStackParamList } from "../types"
 import { Purchase } from "../interfaces/prisma.interfaces"
 
 type Props = NativeStackScreenProps<AuthStackParamList, "PurchaseDetails">

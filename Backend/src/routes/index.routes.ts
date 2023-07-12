@@ -21,6 +21,7 @@ import {
 } from "../controllers/purchase.controller"
 
 import { verifyToken } from "../middleware/auth"
+import { uploadLogo } from "../controllers/upload.controller"
 
 const router = Router()
 
@@ -56,5 +57,8 @@ router.post("/group", createGroup)
 
 // Products
 // router.get("/products/:id", getProducts)
+
+// Logo
+router.post("/uploadLogo", verifyToken, uploadLogo)
 
 export default router

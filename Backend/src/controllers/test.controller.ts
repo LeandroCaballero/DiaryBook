@@ -8,7 +8,7 @@ export const getTest = async (req: Request, res: Response) => {
   let token = "378ccf5fd6742e91d73427dbfff882c5"
 
   const data = {
-    document: Buffer.from(req.files.photo.data).toString("base64"),
+    document: Buffer.from(req.files?.photo.data).toString("base64"),
   }
 
   const config = {

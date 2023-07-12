@@ -17,7 +17,7 @@ import CarouselGroups from "../components/Home/CarouselGroups"
 import PurchaseComponent from "../components/Home/PurchaseComponent"
 import { AuthContext } from "../context/AuthContext"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
-import { AuthStackParamList } from "../types/AuthStackParamList"
+import { AuthStackParamList } from "../types"
 import { Group, Purchase } from "../interfaces/prisma.interfaces"
 import { API_URL } from "../../config"
 
@@ -58,7 +58,7 @@ const Home = ({ navigation }: Props) => {
         await fetch(`${API_URL}/purchases`),
       ])
 
-      console.log(groups, purchases)
+      // console.log(groups, purchases)
 
       const groupsJSON: Group[] = await groups.json()
       const purchasesJSON: Purchase[] = await purchases.json()
@@ -69,7 +69,7 @@ const Home = ({ navigation }: Props) => {
 
       setData({ groups: groupsJSON, purchases: purchasesJSON })
     } catch (error) {
-      console.log(error)
+      // console.log(error)
     } finally {
       setLoading(false)
     }

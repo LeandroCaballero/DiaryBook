@@ -4,7 +4,7 @@ import { SafeAreaView } from "react-native"
 import { PencilSquareIcon } from "react-native-heroicons/outline"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import ModalEditMembers from "../components/Group/ModalEditMembers"
-import { AuthStackParamList } from "../types/AuthStackParamList"
+import { AuthStackParamList } from "../types"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
 
 type Props = NativeStackScreenProps<AuthStackParamList, "Group">

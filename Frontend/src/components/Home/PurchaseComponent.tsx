@@ -7,7 +7,7 @@ import {
   CompositeNavigationProp,
   useNavigation,
 } from "@react-navigation/native"
-import { AuthStackParamList } from "../../types/AuthStackParamList"
+import { AuthStackParamList } from "../../types"
 import { Purchase } from "../../interfaces/prisma.interfaces"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
 dayjs.locale("es")

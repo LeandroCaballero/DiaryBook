@@ -12,7 +12,7 @@ import React, { useState } from "react"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import { useNavigation } from "@react-navigation/native"
 import { zod_registerUser } from "../zod/zod_auth"
-import { AuthenticationStackParamList } from "../types/AuthenticationStackParamList"
+import { AuthenticationStackParamList } from "../types"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
 
 type Props = NativeStackScreenProps<AuthenticationStackParamList, "Register">
@@ -55,7 +55,7 @@ const Register = ({ navigation }: Props) => {
       } else {
         ToastAndroid.show(json.message, ToastAndroid.SHORT)
       }
-      console.log(json)
+      // console.log(json)
     } catch (error) {
       ToastAndroid.show(
         "Hubo un error, comuniquese con Lean!",

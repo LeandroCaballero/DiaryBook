@@ -13,7 +13,7 @@ import { useNavigation } from "@react-navigation/native"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import { AuthContext } from "../context/AuthContext"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
-import { AuthenticationStackParamList } from "../types/AuthenticationStackParamList"
+import { AuthenticationStackParamList } from "../types"
 
 // Mantén tus compras bajo control
 
