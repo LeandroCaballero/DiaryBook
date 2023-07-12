@@ -1,6 +1,7 @@
 import React, { useState, useEffect, ReactNode } from "react"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import { AuthContext } from "./AuthContext"
+import { API_URL } from "../../config"
 
 interface Props {
   children?: ReactNode
@@ -26,13 +27,11 @@ export const AuthProvider = ({ children }: Props) => {
       let userInfoJson: UserInfo = JSON.parse(userInfo || "")
 
       if (userInfo) {
-        const response = await fetch("http://192.168.0.14:3001/status", {
+        const response = await fetch(`${API_URL}/status`, {
           headers: {
             Authorization: `Bearer ${userInfoJson.token}`,
           },
         })
-
-        // console.log("response", response)
 
         if (response?.ok) {
           const json = await response.json()
@@ -43,10 +42,7 @@ export const AuthProvider = ({ children }: Props) => {
           setIsLogged(false)
         }
       }
-
-      //   setSplashLoading(false)
     } catch (e) {
-      //   setSplashLoading(false)
       console.log(`is logged in error ${e}`)
     }
   }

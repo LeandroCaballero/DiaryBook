@@ -19,6 +19,7 @@ import { AuthContext } from "../context/AuthContext"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import { AuthStackParamList } from "../types/AuthStackParamList"
 import { Group, Purchase } from "../interfaces/prisma.interfaces"
+import { API_URL } from "../../config"
 
 type Props = NativeStackScreenProps<AuthStackParamList, "Home">
 
@@ -53,11 +54,11 @@ const Home = ({ navigation }: Props) => {
     try {
       let userInfo = (await AsyncStorage.getItem("userInfo")) || ""
       const [groups, purchases] = await Promise.all([
-        await fetch(
-          `http://192.168.0.14:3001/groups/${JSON.parse(userInfo).id}`
-        ),
-        await fetch("http://192.168.0.14:3001/purchases"),
+        await fetch(`${API_URL}/${JSON.parse(userInfo).id}`),
+        await fetch(`${API_URL}/purchases`),
       ])
+
+      console.log(groups, purchases)
 
       const groupsJSON: Group[] = await groups.json()
       const purchasesJSON: Purchase[] = await purchases.json()
