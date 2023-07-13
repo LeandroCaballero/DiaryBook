@@ -14,6 +14,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage"
 import { AuthContext } from "../context/AuthContext"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import { AuthenticationStackParamList } from "../types"
+import { API_URL } from "../../config"
 
 // Mantén tus compras bajo control
 
@@ -35,7 +36,7 @@ const Login = ({ navigation }: Props) => {
   const login = async () => {
     try {
       setLoading(true)
-      const response = await fetch("http://192.168.0.14:3001/login", {
+      const response = await fetch(`${API_URL}/login`, {
         method: "POST", // or 'PUT'
         headers: {
           "Content-Type": "application/json",

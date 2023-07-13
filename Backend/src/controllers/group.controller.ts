@@ -18,7 +18,7 @@ export const getGroups = async (req: Request, res: Response) => {
   const { userId } = req.params
 
   const groups = await prisma.group.findMany({
-    where: { Users: { some: { id: +userId } } },
+    where: { Users: { some: { id: userId } } },
     include: { Users: true, Admins: true, Purchases: true },
   })
 

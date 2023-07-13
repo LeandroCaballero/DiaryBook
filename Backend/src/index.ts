@@ -3,15 +3,12 @@ import cors from "cors"
 import router from "./routes/index.routes"
 import dotenv from "dotenv"
 import fileupload from "express-fileupload"
-import { fileURLToPath } from "url"
-import path, { dirname } from "path"
-
-// const __dirname = dirname(fileURLToPath(import.meta.url))
+import path from "path"
 
 dotenv.config()
 const app = express()
 
-// app.set("views", path.join(__dirname, "views"))
+app.set("views", path.join(__dirname, "views"))
 app.set("view engine", "ejs")
 
 app.use(express.json())

@@ -7,13 +7,15 @@ import {
   Button,
   ActivityIndicator,
   ToastAndroid,
+  TouchableOpacity,
 } from "react-native"
-import React, { useState } from "react"
+import React, { useLayoutEffect, useState } from "react"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import { useNavigation } from "@react-navigation/native"
 import { zod_registerUser } from "../zod/zod_auth"
 import { AuthenticationStackParamList } from "../types"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
+import { API_URL } from "../../config"
 
 type Props = NativeStackScreenProps<AuthenticationStackParamList, "Register">
 
@@ -22,6 +24,12 @@ const Register = ({ navigation }: Props) => {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerShown: false,
+    })
+  }, [])
 
   const [loading, setLoading] = useState(false)
 
@@ -35,7 +43,7 @@ const Register = ({ navigation }: Props) => {
       //   confirmPassword,
       // })
 
-      const response = await fetch("http://192.168.0.14:3001/register", {
+      const response = await fetch(`${API_URL}/register`, {
         method: "POST", // or 'PUT'
         headers: {
           "Content-Type": "application/json",
@@ -48,13 +56,15 @@ const Register = ({ navigation }: Props) => {
       })
 
       const json = await response.json()
+      // console.log(response)
       if (response?.ok) {
-        ToastAndroid.show("Registro exitoso, inicie sesión", ToastAndroid.LONG)
+        ToastAndroid.show(json.message, ToastAndroid.LONG)
         navigation.navigate("Login")
         // setTimeout(() => navigation.navigate("Login"), 1500)
       } else {
         ToastAndroid.show(json.message, ToastAndroid.SHORT)
       }
+      setLoading(false)
       // console.log(json)
     } catch (error) {
       ToastAndroid.show(
@@ -62,6 +72,7 @@ const Register = ({ navigation }: Props) => {
         ToastAndroid.SHORT
       )
       console.error(error)
+      setLoading(false)
     }
   }
 
@@ -109,7 +120,9 @@ const Register = ({ navigation }: Props) => {
               setConfirmPassword(e)
             }}
           ></TextInput> */}
-          <Button title="Registarse" onPress={register} />
+          <TouchableOpacity className="mt-2" onPress={register}>
+            <Text>Registrarse</Text>
+          </TouchableOpacity>
           {/* <Button title="Token" onPress={getStorage} /> */}
           <View className="flex flex-row gap-x-1">
             <Text>Tienes una cuenta?</Text>

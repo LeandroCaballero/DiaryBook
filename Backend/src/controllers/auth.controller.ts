@@ -5,12 +5,9 @@ import sgMail from "@sendgrid/mail"
 import crypto from "crypto"
 import { Request, Response } from "express"
 
-// SENDGRID_API_KEY
-sgMail.setApiKey(process.env.SENDGRID_API_KEY || "")
-
 export const register = async (req: Request, res: Response) => {
   const { name, email, password } = req.body
-  // console.log("Entra en register", req.body)
+  console.log("Entra en register", req.body)
 
   const oldUser = await prisma.user.findFirst({ where: { email } })
 
@@ -35,6 +32,9 @@ export const register = async (req: Request, res: Response) => {
   })
 
   if (user) {
+    // SENDGRID_API_KEY
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY || "")
+
     const msg = {
       to: email,
       from: "diarybook.arg@gmail.com",
@@ -50,19 +50,18 @@ export const register = async (req: Request, res: Response) => {
       .then((response) => {
         console.log(response[0].statusCode)
         console.log(response[0].headers)
+
+        res.status(200).json({
+          message: "Se ha enviado un email de confirmación para su cuenta",
+        })
       })
       .catch((error) => {
-        console.error(error)
+        console.error("ERROR de mail!!", error)
+        return res
+          .status(500)
+          .json({ message: "Hubo un error, por favor intente mas tarde" })
       })
   }
-
-  // return new user
-  // res.json({
-  //   id: user.id,
-  //   email: user.email,
-  //   message: "Registro exitoso, inicie sesión",
-  // })
-  res.status(200).json({ message: "Creado con éxito" })
 }
 
 export const login = async (req: Request, res: Response) => {
@@ -110,7 +109,7 @@ export const confirmEmail = async (req: Request, res: Response) => {
 
   const checkInfoUser = await prisma.user.findFirst({
     where: {
-      id: +id,
+      id: id,
       tokenEmail: token,
     },
   })

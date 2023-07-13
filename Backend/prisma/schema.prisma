@@ -8,7 +8,7 @@ datasource db {
 }
 
 model User {
-  id             Int            @id @default(autoincrement())
+  id             String         @id @default(uuid())
   createdAt      DateTime       @default(now()) @db.Timestamp(6)
   updatedAt      DateTime       @updatedAt
   name           String
@@ -24,7 +24,7 @@ model User {
 }
 
 model Group {
-  id        Int        @id @default(autoincrement())
+  id        String     @id @default(uuid())
   createdAt DateTime   @default(now()) @db.Timestamp(6)
   updatedAt DateTime   @updatedAt
   name      String
@@ -34,20 +34,20 @@ model Group {
 }
 
 model Purchase {
-  id            Int            @id @default(autoincrement())
+  id            String         @id @default(uuid())
   createdAt     DateTime       @default(now()) @db.Timestamp(6)
   updatedAt     DateTime       @updatedAt
   dateBuy       DateTime?
   name          String?
   PurchaseItems PurchaseItem[]
   Buyer         User           @relation(fields: [buyerId], references: [id])
-  buyerId       Int
+  buyerId       String
   Group         Group          @relation(fields: [groupId], references: [id])
-  groupId       Int
+  groupId       String
 }
 
 model PurchaseItem {
-  id          Int       @id @default(autoincrement())
+  id          String    @id @default(uuid())
   createdAt   DateTime  @default(now()) @db.Timestamp(6)
   updatedAt   DateTime  @updatedAt
   quantity    Int
@@ -59,7 +59,7 @@ model PurchaseItem {
   // Product    Product   @relation(fields: [productId], references: [id])
   // productId   Int
   Purchase    Purchase? @relation(fields: [purchaseId], references: [id])
-  purchaseId  Int?
+  purchaseId  String?
 }
 
 // model Product {

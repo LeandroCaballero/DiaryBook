@@ -63,10 +63,10 @@ export const createPurchase = async (req: Request, res: Response) => {
   const newPurchase = await prisma.purchase.create({
     data: {
       dateBuy,
-      Group: { connect: { id: +groupId } },
-      Buyer: { connect: { id: +buyerId } },
+      Group: { connect: { id: groupId } },
+      Buyer: { connect: { id: buyerId } },
       PurchaseItems: {
-        connect: [...newPurchaseItems.map((e) => ({ id: +e.id }))],
+        connect: [...newPurchaseItems.map((e) => ({ id: e.id }))],
       },
     },
   })
@@ -76,7 +76,7 @@ export const createPurchase = async (req: Request, res: Response) => {
 
 export const getOnePruchase = async (req: Request, res: Response) => {
   const purchase = await prisma.purchase.findFirst({
-    where: { id: +req.params.id },
+    where: { id: req.params.id },
     include: { PurchaseItems: true },
   })
 
