@@ -1,5 +1,6 @@
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3"
 import { Request, Response } from "express"
+import prisma from "../server/prisma"
 
 export const uploadLogo = async (req: any, res: Response) => {
   const client = new S3Client({
@@ -11,38 +12,36 @@ export const uploadLogo = async (req: any, res: Response) => {
   })
 
   const id = req.body.id
-  const imagen = req.files?.foto.data
-  const type = req.body.type
-
-  // try {
-  //   await sharp(imagen)
-  //     .resize(newWidth, newHeight)
-  //     .jpeg({ quality: newQuality })
-  //     .toFile(__dirname + "/out/wallpaper.jpg")
-  //     .then(() => {
-  //       console.log("Imagen procesada exitosamente.")
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error al procesar la imagen:", error)
-  //     })
-  // } catch (error) {
-  //   console.log("ERROR SHARP", error)
-  // }
+  const image = req.files?.photo.data
 
   const command = new PutObjectCommand({
     Bucket: "diarybookfiles",
     Key: `Logos/${id}.jpg`,
-    Body: imagen,
+    Body: image,
     ACL: "public-read",
     ContentType: "image/jpg",
   })
 
   try {
     await client.send(command)
+
+    const updateUser = await prisma.user.update({
+      where: {
+        id: id,
+      },
+      data: {
+        profileImage: `https://diarybookfiles.s3.sa-east-1.amazonaws.com/Logos/${id}.jpg`,
+      },
+    })
+
+    if (updateUser) {
+      console.log("todo bien")
+      return res
+        .status(200)
+        .json({ message: "Se actualizó la foto de perfil!" })
+    }
   } catch (err) {
     console.error(err)
     return res.status(500).send("Algo falló")
   }
-
-  return res.status(200).send("File uploaded successfully!")
 }

@@ -54,7 +54,7 @@ const Home = ({ navigation }: Props) => {
     try {
       let userInfo = (await AsyncStorage.getItem("userInfo")) || ""
       const [groups, purchases] = await Promise.all([
-        await fetch(`${API_URL}/${JSON.parse(userInfo).id}`),
+        await fetch(`${API_URL}/groups/${JSON.parse(userInfo).id}`),
         await fetch(`${API_URL}/purchases`),
       ])
 
@@ -88,7 +88,10 @@ const Home = ({ navigation }: Props) => {
     <SafeAreaView className="p-3 h-full">
       <View className="flex flex-row justify-between">
         <Text className="text-xl">Bienvenido {user?.name}</Text>
-        <Pressable onPress={loggout} className="rounded-full border p-0.5">
+        <Pressable
+          onPress={() => navigation.navigate("Profile")}
+          className="rounded-full border p-0.5"
+        >
           <UserCircleIcon size={30} color="#000000" />
         </Pressable>
       </View>

@@ -29,6 +29,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context"
 import { Group, Purchase, PurchaseItem } from "../interfaces/prisma.interfaces"
 import { NewPurchaseItem } from "../interfaces/createPurchases.interfaces"
+import { API_URL } from "../../config"
 
 const CreatePurchase = () => {
   const [date, setDate] = useState(new Date())
@@ -81,8 +82,8 @@ const CreatePurchase = () => {
     // setLoading(true)
     try {
       const [groups, purchases] = await Promise.all([
-        await fetch("http://192.168.0.14:3001/groups"),
-        await fetch("http://192.168.0.14:3001/purchases"),
+        await fetch(`${API_URL}/groups`),
+        await fetch(`${API_URL}/purchases`),
       ])
 
       const groupsJSON: Group[] = await groups.json()
@@ -178,7 +179,7 @@ const CreatePurchase = () => {
     // console.log(formData)
 
     try {
-      const response = await fetch("http://192.168.0.14:3001/test", {
+      const response = await fetch(`${API_URL}/test`, {
         method: "POST",
         body: formData,
         headers: {

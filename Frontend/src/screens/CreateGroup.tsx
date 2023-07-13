@@ -10,6 +10,7 @@ import {
 import React, { useLayoutEffect, useState, useEffect } from "react"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import { zod_checkNameGroup } from "../zod/zod_createGroup"
+import { API_URL } from "../../config"
 // Mantén tus compras bajo control
 
 const CreateGroup = ({ navigation }: { navigation: any }) => {
@@ -50,7 +51,7 @@ const CreateGroup = ({ navigation }: { navigation: any }) => {
     try {
       zod_checkNameGroup.parse({ nameGroup })
       setLoading(true)
-      const response = await fetch("http://192.168.0.14:3001/checkGroupName", {
+      const response = await fetch(`${API_URL}/checkGroupName`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${user?.token}`,
@@ -84,7 +85,7 @@ const CreateGroup = ({ navigation }: { navigation: any }) => {
     try {
       setLoading(true)
       const response = await fetch(
-        `http://192.168.0.14:3001/checkExistGroup/${numberGroup}`,
+        `${API_URL}/checkExistGroup/${numberGroup}`,
         {
           method: "GET",
           headers: {
@@ -110,7 +111,7 @@ const CreateGroup = ({ navigation }: { navigation: any }) => {
       setLoading(true)
       console.log("antes de mandar", typeof user)
 
-      const response = await fetch("http://192.168.0.14:3001/group", {
+      const response = await fetch(`${API_URL}/group`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${user?.token}`,

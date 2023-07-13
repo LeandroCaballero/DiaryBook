@@ -6,6 +6,7 @@ import CreatePurchase from "../screens/CreatePurchase"
 import CreateGroup from "../screens/CreateGroup"
 import Group from "../screens/Group"
 import { AuthStackParamList } from "../types"
+import Profile from "../screens/Profile"
 
 const Stack = createNativeStackNavigator<AuthStackParamList>()
 
@@ -15,7 +16,12 @@ const AuthStack = () => {
       <>
         <Stack.Screen name="Home" component={Home} />
         <Stack.Screen
-          options={({ route }) => ({ title: route.params?.title })}
+          name="Profile"
+          component={Profile}
+          options={{ title: "Mi perfil" }}
+        />
+        <Stack.Screen
+          options={({ route }) => ({ title: route.params.title })}
           name="Group"
           component={Group}
         />

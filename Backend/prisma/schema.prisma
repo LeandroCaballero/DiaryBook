@@ -16,6 +16,7 @@ model User {
   password       String
   confirmEmail   Boolean        @default(false)
   tokenEmail     String
+  profileImage   String?
   Purchases      Purchase[]
   Groups         Group[]        @relation("Users")
   Admins         Group[]        @relation("Admins")

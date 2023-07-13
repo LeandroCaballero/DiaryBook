@@ -65,15 +65,26 @@ export const register = async (req: Request, res: Response) => {
 }
 
 export const login = async (req: Request, res: Response) => {
-  const { email, password } = req.body
-  console.log(email, password)
+  const { emailOrName, password } = req.body
+  console.log(emailOrName, password)
 
-  const existUser = await prisma.user.findFirst({ where: { email } })
+  const existUser = await prisma.user.findFirst({
+    where: {
+      OR: [
+        {
+          email: emailOrName,
+        },
+        {
+          name: emailOrName,
+        },
+      ],
+    },
+  })
 
   if (!existUser) {
     return res
       .status(409)
-      .json({ message: "El email ingresado no se encuentra registrado" })
+      .json({ message: "El usuario no se encuentra registrado" })
   }
 
   if (await bcrypt.compare(password, existUser.password)) {
@@ -82,7 +93,7 @@ export const login = async (req: Request, res: Response) => {
     }
 
     const token = jwt.sign(
-      { user_id: existUser.id, email },
+      { user_id: existUser.id, emailOrName },
       process.env.TOKEN_KEY || "",
       {
         expiresIn: "7d",
@@ -94,6 +105,7 @@ export const login = async (req: Request, res: Response) => {
       name: existUser.name,
       email: existUser.email,
       token: token,
+      profileImage: existUser.profileImage,
     })
   } else {
     res.status(403).json({ message: "Credenciales incorrectas" })

@@ -12,6 +12,7 @@ interface UserInfo {
   name: string
   email: string
   token: string
+  image?: string
 }
 
 export const AuthProvider = ({ children }: Props) => {

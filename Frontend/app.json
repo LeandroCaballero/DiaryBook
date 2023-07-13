@@ -32,6 +32,12 @@
         {
           "cameraPermission": "Permitir a DiaryBook utilizar la camara"
         }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app accesses your photos to let you share them with your friends."
+        }
       ]
     ]
   }

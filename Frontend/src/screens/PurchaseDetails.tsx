@@ -14,6 +14,7 @@ import "dayjs/locale/es"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import { AuthStackParamList } from "../types"
 import { Purchase } from "../interfaces/prisma.interfaces"
+import { API_URL } from "../../config"
 
 type Props = NativeStackScreenProps<AuthStackParamList, "PurchaseDetails">
 
@@ -32,7 +33,7 @@ const PurchaseDetails = ({ route }: Props) => {
     // console.log(route.params.purchase)
     try {
       const response = await fetch(
-        `http://192.168.0.14:3001/purchase/${route.params.purchaseId}`
+        `${API_URL}/purchase/${route.params.purchaseId}`
       )
       const json = await response.json()
       // console.log("en detalles", json)

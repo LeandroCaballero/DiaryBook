@@ -23,7 +23,7 @@ type Props = NativeStackScreenProps<AuthenticationStackParamList, "Login">
 const Login = ({ navigation }: Props) => {
   const { setIsLogged } = useContext(AuthContext)
 
-  const [email, setEmail] = useState("")
+  const [emailOrName, setEmailOrName] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
 
@@ -37,19 +37,19 @@ const Login = ({ navigation }: Props) => {
     try {
       setLoading(true)
       const response = await fetch(`${API_URL}/login`, {
-        method: "POST", // or 'PUT'
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          email,
+          emailOrName,
           password,
         }),
       })
 
       const json = await response.json()
       if (response?.ok) {
-        console.log("bien", json)
+        // console.log("bien", json)
         await AsyncStorage.setItem("userInfo", JSON.stringify(json))
 
         setIsLogged && setIsLogged(true)
@@ -100,9 +100,9 @@ const Login = ({ navigation }: Props) => {
           {/* <Text>Nombre o email</Text> */}
           <TextInput
             className="border-b border-black p-2"
-            placeholder="Email"
+            placeholder="Email o Nombre"
             onChangeText={(e) => {
-              setEmail(e)
+              setEmailOrName(e)
             }}
           ></TextInput>
           <TextInput
