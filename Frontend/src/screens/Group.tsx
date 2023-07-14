@@ -31,6 +31,7 @@ const Group = ({ route }: Props) => {
       <ScrollView>
         <View className="flex flex-row justify-between">
           <Text className="text-lg">Miembros</Text>
+
           {group.Admins.some((admin) => admin.id == user?.id) && (
             <TouchableOpacity
               className="border border-green-500 rounded-lg mb-3 py-2 px-2"
@@ -40,15 +41,20 @@ const Group = ({ route }: Props) => {
             </TouchableOpacity>
           )}
         </View>
-        {group.Users.map((el) => (
+        {group.Admins.map((el) => (
           <View key={el.id} className="flex flex-row justify-between">
             <Text>{el.name}</Text>
-            {group.Admins.some((admin) => admin.id == el.id) && (
-              <Text className="text-green-700">Administrador</Text>
-            )}
+            <Text className="text-green-700">Administrador</Text>
           </View>
         ))}
+        {group.Users.map((el) => (
+          <Text key={el.id}>{el.name}</Text>
+        ))}
 
+        <Text className="text-lg mt-3">Solicitudes</Text>
+        {group.RequestUsers.map((el) => (
+          <Text key={el.id}>{el.name}</Text>
+        ))}
         <Text className="text-lg mt-2">Compras</Text>
         {group.Purchases.length != 0 ? (
           group.Purchases.map((el) => (

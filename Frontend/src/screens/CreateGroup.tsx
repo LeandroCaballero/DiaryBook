@@ -11,25 +11,29 @@ import React, { useLayoutEffect, useState, useEffect } from "react"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import { zod_checkNameGroup } from "../zod/zod_createGroup"
 import { API_URL } from "../../config"
+import { userInfo } from "../types"
+import { Group } from "../interfaces/prisma.interfaces"
 // Mantén tus compras bajo control
 
 const CreateGroup = ({ navigation }: { navigation: any }) => {
-  const [user, setUser] = useState<{
-    id: number
-    name: string
-    email: string
-    token: string
-  }>()
+  const [user, setUser] = useState<userInfo>()
   const [loading, setLoading] = useState(false)
   const [nameGroup, setNameGroup] = useState<string>()
   const [textAvailability, setTextAvailability] = useState<{
-    text: string
-    color: string
-    available: boolean
+    text?: string
+    color?: string
+    available?: boolean
+    name?: string
+  }>()
+  const [textExistGroup, setTextExistGroup] = useState<{
+    text?: string
+    color?: string
+    exist?: boolean
+    group?: Group
   }>()
   const [error, setError] = useState()
 
-  const [numberGroup, setNumberGroup] = useState<string>()
+  const [nameExistGroup, setNameExistGroup] = useState("")
 
   useEffect(() => {
     getUser()
@@ -62,17 +66,26 @@ const CreateGroup = ({ navigation }: { navigation: any }) => {
         }),
       })
 
-      const json = await response.json()
-      // console.log("Respuesta", json)
+      const { text, available, name } = await response.json()
 
       if (response?.ok) {
         setTextAvailability({
-          text: json.text,
-          color: json.color,
-          available: true,
+          text,
+          color: "green-500",
+          available,
+          name,
         })
-        setError(undefined)
+      } else {
+        setTextAvailability({
+          text: text,
+          color: "red-500",
+          available: available,
+          name: name,
+        })
       }
+
+      // Reset zod error message
+      setError(undefined)
     } catch (error: any) {
       setError(JSON.parse(error.message)[0].message)
       setTextAvailability(undefined)
@@ -85,7 +98,7 @@ const CreateGroup = ({ navigation }: { navigation: any }) => {
     try {
       setLoading(true)
       const response = await fetch(
-        `${API_URL}/checkExistGroup/${numberGroup}`,
+        `${API_URL}/checkExistGroup/${nameExistGroup}`,
         {
           method: "GET",
           headers: {
@@ -94,22 +107,43 @@ const CreateGroup = ({ navigation }: { navigation: any }) => {
         }
       )
 
-      const json = await response.json()
-      // console.log("Respuesta", json)
+      const { text, exist, group } = await response.json()
 
       if (response?.ok) {
-        // console.log("respuesta", json)
+        setTextExistGroup({
+          text,
+          color: "green-500",
+          exist,
+          group,
+        })
+        setError(undefined)
+      } else {
+        setTextExistGroup({
+          text,
+          color: "red-500",
+          exist,
+          group,
+        })
       }
+      setLoading(false)
     } catch (error) {
+      setLoading(false)
       // console.log(error)
     }
   }
 
   const createGroup = async () => {
+    if (nameGroup != textAvailability?.name) {
+      setTextAvailability({ ...textAvailability, available: false })
+      ToastAndroid.show(
+        "Nombre incorrecto no te hagas el vivo",
+        ToastAndroid.SHORT
+      )
+      return
+    }
     try {
       zod_checkNameGroup.parse({ nameGroup })
       setLoading(true)
-      console.log("antes de mandar", typeof user)
 
       const response = await fetch(`${API_URL}/group`, {
         method: "POST",
@@ -133,6 +167,53 @@ const CreateGroup = ({ navigation }: { navigation: any }) => {
       setLoading(false)
       ToastAndroid.show("Grupo creado con éxito", ToastAndroid.SHORT)
       navigation.navigate("Home")
+    }
+  }
+
+  const joinGroup = async () => {
+    if (nameExistGroup != textExistGroup?.group?.name) {
+      console.log(
+        "no te hagas el vivo",
+        nameExistGroup,
+        textExistGroup?.group?.name
+      )
+      setTextExistGroup({ ...textExistGroup, exist: false })
+      ToastAndroid.show(
+        "Nombre incorrecto no te hagas el vivo",
+        ToastAndroid.SHORT
+      )
+      return
+    }
+
+    try {
+      // zod_checkNameGroup.parse({ nameGroup })
+      setLoading(true)
+
+      const response = await fetch(`${API_URL}/joinGroup`, {
+        method: "POST",
+        headers: {
+          // Authorization: `Bearer ${user?.token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          groupId: textExistGroup?.group?.id,
+          userId: user?.id,
+        }),
+      })
+
+      const { message } = await response.json()
+
+      if (response?.ok) {
+        setLoading(false)
+        ToastAndroid.show(message, ToastAndroid.SHORT)
+        navigation.navigate("Home")
+      } else {
+        setLoading(false)
+        ToastAndroid.show(message, ToastAndroid.SHORT)
+      }
+    } catch (error: any) {
+      setError(JSON.parse(error?.message)[0]?.message)
+      setLoading(false)
     }
   }
 
@@ -166,33 +247,60 @@ const CreateGroup = ({ navigation }: { navigation: any }) => {
         <TouchableOpacity
           className="border border-green-500 mb-3 py-2 px-2"
           onPress={checkAvailabilityGroup}
-          //   onPress={() => setModalVisible(!modalVisible)}
         >
           <Text className="text-blue-500">Comprobar disponibilidad</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          className="border border-green-500 mb-3 py-2 px-2"
+          className={`border border-green-500 mb-3 py-2 px-2 ${
+            !textAvailability?.available && "border-gray-300"
+          }`}
           onPress={createGroup}
-          //   onPress={() => setModalVisible(!modalVisible)}
+          disabled={!textAvailability?.available}
         >
-          <Text className="text-green-500">Crear grupo</Text>
+          <Text
+            className={
+              textAvailability?.available ? "text-green-500" : "text-gray-300"
+            }
+          >
+            Crear grupo
+          </Text>
         </TouchableOpacity>
       </View>
 
       <Text className="">Unirse a un grupo existente</Text>
       <TextInput
-        onChangeText={(e) => setNumberGroup(e)}
+        onChangeText={(e) => setNameExistGroup(e)}
         // value={data.name}
         placeholder="Ingrese un identificador de grupo"
         className=" p-1 mt-1 rounded-lg bg-gray-50 w-fit"
       />
-      <View className="flex flex-row justify-center my-3">
+      {textExistGroup && (
+        <Text className={`text-${textExistGroup.color}`}>
+          {textExistGroup.text}
+        </Text>
+      )}
+      <View className="flex flex-row justify-between my-3">
         <TouchableOpacity
           className="border border-green-500 mb-3 py-2 px-2"
           onPress={checkExistGroup}
           //   onPress={() => setModalVisible(!modalVisible)}
         >
           <Text className="text-green-500">Comprobar existencia</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          className={`border border-green-500 mb-3 py-2 px-2 ${
+            !textExistGroup?.exist && "border-gray-300"
+          }`}
+          onPress={joinGroup}
+          disabled={!textExistGroup?.exist}
+        >
+          <Text
+            className={
+              textExistGroup?.exist ? "text-green-500" : "text-gray-300"
+            }
+          >
+            Unirse
+          </Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

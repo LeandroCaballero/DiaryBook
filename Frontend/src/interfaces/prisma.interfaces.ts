@@ -22,6 +22,7 @@ interface Group {
   Admins: User[]
   Users: User[]
   Purchases: Purchase[]
+  RequestUsers: User[]
 }
 
 interface Purchase {

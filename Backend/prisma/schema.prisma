@@ -20,18 +20,20 @@ model User {
   Purchases      Purchase[]
   Groups         Group[]        @relation("Users")
   Admins         Group[]        @relation("Admins")
+  Requests       Group[]        @relation("RequestsUsers")
   PurchaseItem   PurchaseItem[]
   purchaseItemId Int?
 }
 
 model Group {
-  id        String     @id @default(uuid())
-  createdAt DateTime   @default(now()) @db.Timestamp(6)
-  updatedAt DateTime   @updatedAt
-  name      String
-  Admins    User[]     @relation("Admins")
-  Users     User[]     @relation("Users")
-  Purchases Purchase[]
+  id           String     @id @default(uuid())
+  createdAt    DateTime   @default(now()) @db.Timestamp(6)
+  updatedAt    DateTime   @updatedAt
+  name         String
+  Admins       User[]     @relation("Admins")
+  Users        User[]     @relation("Users")
+  RequestUsers User[]     @relation("RequestsUsers")
+  Purchases    Purchase[]
 }
 
 model Purchase {

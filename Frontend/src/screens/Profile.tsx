@@ -1,10 +1,18 @@
-import { View, Text, Image, TouchableOpacity, ToastAndroid } from "react-native"
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  ToastAndroid,
+  SafeAreaView,
+} from "react-native"
 import React, { useContext, useEffect, useState } from "react"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import * as ImagePicker from "expo-image-picker"
 import { API_URL } from "../../config"
 import { AuthContext } from "../context/AuthContext"
 import { userInfo } from "../types"
+import { Cog8ToothIcon } from "react-native-heroicons/outline"
 
 const Profile = () => {
   const [user, setUser] = useState<userInfo>({
@@ -78,8 +86,8 @@ const Profile = () => {
   }
 
   return (
-    <View>
-      <View className="flex flex-row justify-center mt-3">
+    <SafeAreaView className="p-3 h-full">
+      <View className="flex flex-row justify-center mt-2">
         {user?.profileImage ? (
           <TouchableOpacity
             onPress={pickImage}
@@ -104,14 +112,22 @@ const Profile = () => {
           </TouchableOpacity>
         )}
       </View>
-      <Text className="text-center text-lg mt-2">{user?.name}</Text>
-      <Text
-        className="text-blue-400 bottom-0 text-center mt-5"
-        onPress={loggout}
-      >
+
+      <Text className="text-center text-xl mt-2">{user?.name}</Text>
+      <View className="flex flex-row mt-10 justify-center">
+        <TouchableOpacity className="border border-gray-400 rounded-full px-3 py-1 flex flex-row gap-x-1">
+          <Cog8ToothIcon size={20} color="#000000" />
+          <Text>Configuración</Text>
+        </TouchableOpacity>
+      </View>
+      <Text className="text-blue-400 text-center mt-5" onPress={loggout}>
         Cerrar sesión
       </Text>
-    </View>
+
+      {/* <Text className="text-center text-xl mt-2">{user?.name}</Text>
+      <Text className="text-lg ml-2">Datos personales</Text>
+      <Text className="mt-2 ml-2">Email: {user?.email}</Text> */}
+    </SafeAreaView>
   )
 }
 

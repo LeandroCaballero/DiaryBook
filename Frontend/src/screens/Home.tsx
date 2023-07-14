@@ -12,10 +12,8 @@ import { SafeAreaView } from "react-native-safe-area-context"
 import { PlusIcon } from "react-native-heroicons/outline"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import { UserCircleIcon } from "react-native-heroicons/outline"
-
 import CarouselGroups from "../components/Home/CarouselGroups"
 import PurchaseComponent from "../components/Home/PurchaseComponent"
-import { AuthContext } from "../context/AuthContext"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import { AuthStackParamList } from "../types"
 import { Group, Purchase } from "../interfaces/prisma.interfaces"
@@ -24,8 +22,6 @@ import { API_URL } from "../../config"
 type Props = NativeStackScreenProps<AuthStackParamList, "Home">
 
 const Home = ({ navigation }: Props) => {
-  const { setIsLogged } = useContext(AuthContext)
-
   const [data, setData] = useState<{
     groups: Group[]
     purchases: Purchase[]
@@ -77,11 +73,6 @@ const Home = ({ navigation }: Props) => {
 
   const toDetails = (id: number) => {
     navigation.navigate("PurchaseDetails", { purchaseId: id })
-  }
-
-  const loggout = async () => {
-    await AsyncStorage.removeItem("userInfo")
-    setIsLogged && setIsLogged(false)
   }
 
   return (

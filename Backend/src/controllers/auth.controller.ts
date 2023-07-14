@@ -59,7 +59,7 @@ export const register = async (req: Request, res: Response) => {
         console.error("ERROR de mail!!", error)
         return res
           .status(500)
-          .json({ message: "Hubo un error, por favor intente mas tarde" })
+          .json({ message: "Hubo un error, por favor intente más tarde" })
       })
   }
 }
@@ -89,7 +89,7 @@ export const login = async (req: Request, res: Response) => {
 
   if (await bcrypt.compare(password, existUser.password)) {
     if (!existUser.confirmEmail) {
-      return res.status(403).json({ message: "Su usuario no esta confimado" })
+      return res.status(403).json({ message: "Su usuario no esta confirmado" })
     }
 
     const token = jwt.sign(
@@ -144,7 +144,7 @@ export const confirmEmail = async (req: Request, res: Response) => {
     })
 
     return res
-      .status(409)
+      .status(200)
       .render("confirmEmailSuccess", { name: checkInfoUser.name })
   } catch (error) {
     console.log("Error confirmEmail", error)

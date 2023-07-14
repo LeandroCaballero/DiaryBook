@@ -5,12 +5,7 @@ import {
   getStatus,
   confirmEmail,
 } from "../controllers/auth.controller"
-import {
-  getGroups,
-  createGroup,
-  checkGroupName,
-  checkExistGroup,
-} from "../controllers/group.controller"
+import * as groupController from "../controllers/group.controller"
 import { getProducts } from "../controllers/product.controller"
 import { getTest } from "../controllers/test.controller"
 
@@ -49,11 +44,16 @@ router.post("/purchase", createPurchase)
 // router.post("/purchase", verifyToken, createPurchase)
 
 //Groups
-router.get("/groups/:userId", getGroups)
-router.post("/checkGroupName", checkGroupName)
-router.get("/checkExistGroup/:id", checkExistGroup)
+router.get("/groups/:userId", groupController.getGroups)
+router.post("/checkGroupName", groupController.checkGroupName)
+router.get("/checkExistGroup/:name", groupController.checkExistGroup)
+router.post("/group", groupController.createGroup)
+router.post("/joinGroup", groupController.joinGroup)
 
-router.post("/group", createGroup)
+router.post("/addAdmin", groupController.addAdmin)
+router.post("/deleteMember", groupController.deleteMember)
+router.post("/acceptMember", groupController.acceptMember)
+router.post("/rejectMember", groupController.rejectMember)
 
 // Products
 // router.get("/products/:id", getProducts)
