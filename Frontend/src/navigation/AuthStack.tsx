@@ -26,7 +26,7 @@ const AuthStack = () => {
           component={Group}
         />
         <Stack.Screen
-          options={{ title: "Crear compra" }}
+          options={{ title: "Agregar compra" }}
           name="CreatePurchase"
           component={CreatePurchase}
         />

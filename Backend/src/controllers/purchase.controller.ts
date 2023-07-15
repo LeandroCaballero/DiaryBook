@@ -22,7 +22,7 @@ export const createPurchase = async (req: Request, res: Response) => {
       const newPurchaseItem = await prisma.purchaseItem.create({
         data: {
           price: item.price,
-          shared: item.shared,
+          forUsers: item.forUsers,
           quantity: item.quantity,
           total: item.shared
             ? (item.price * item.quantity) / 2

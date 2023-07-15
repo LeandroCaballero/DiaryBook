@@ -1,7 +1,13 @@
-import { View, Text, ScrollView, TouchableOpacity } from "react-native"
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  Pressable,
+} from "react-native"
 import React, { useEffect, useState } from "react"
 import { SafeAreaView } from "react-native"
-import { PencilSquareIcon } from "react-native-heroicons/outline"
+import { PencilSquareIcon, PlusIcon } from "react-native-heroicons/outline"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import ModalEditMembers from "../components/Group/ModalEditMembers"
 import { AuthStackParamList } from "../types"
@@ -13,7 +19,7 @@ const Group = ({ route, navigation }: Props) => {
   const { group } = route.params
 
   const [user, setUser] = useState<{
-    id: number
+    id: string
     name: string
     email: string
     token: string
@@ -64,7 +70,21 @@ const Group = ({ route, navigation }: Props) => {
         {group.RequestUsers.map((el) => (
           <Text key={el.id}>{el.name}</Text>
         ))}
-        <Text className="text-lg mt-2">Compras</Text>
+        <View className="flex flex-row justify-between">
+          <Text className="text-lg">Compras</Text>
+          <Pressable
+            onPress={() =>
+              navigation.navigate("CreatePurchase", {
+                group: group,
+                title: "Agregar compra",
+                userInfo: user,
+              })
+            }
+            className="rounded-full border p-0.5"
+          >
+            <PlusIcon size={25} color="#000000" />
+          </Pressable>
+        </View>
         {group.Purchases.length != 0 ? (
           group.Purchases.map((el) => (
             <View key={el.id} className="flex flex-row justify-between">

@@ -1,5 +1,5 @@
 interface User {
-  id: number
+  id: string
   createdAt: Date
   updatedAt: Date
   name: String
@@ -45,7 +45,7 @@ interface PurchaseItem {
   quantity: number
   productName: String
   price: number
-  shared: User[]
+  forUsers: User[]
   total: number
 
   Purchase: Purchase | undefined

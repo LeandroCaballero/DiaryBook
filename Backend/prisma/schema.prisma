@@ -57,7 +57,7 @@ model PurchaseItem {
   // Price here for inflation
   productName String
   price       Float
-  shared      User[]
+  forUsers    User[]
   total       Int
   // Product    Product   @relation(fields: [productId], references: [id])
   // productId   Int

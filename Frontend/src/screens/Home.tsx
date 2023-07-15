@@ -87,12 +87,12 @@ const Home = ({ navigation }: Props) => {
         </Pressable>
       </View>
 
-      <Pressable
+      {/* <Pressable
         onPress={() => navigation.navigate("CreatePurchase")}
         className=" absolute bottom-5 right-5 rounded-full p-5 z-10"
       >
         <PlusIcon size={30} color="#FFFFFF" />
-      </Pressable>
+      </Pressable> */}
 
       <ScrollView
         refreshControl={
@@ -116,12 +116,12 @@ const Home = ({ navigation }: Props) => {
         )}
         <View className="flex flex-row justify-between mt-5">
           <Text className="text-lg">Mis últimas compras</Text>
-          <Pressable
+          {/* <Pressable
             onPress={() => navigation.navigate("CreatePurchase")}
             className="rounded-full border p-0.5"
           >
             <PlusIcon size={25} color="#000000" />
-          </Pressable>
+          </Pressable> */}
         </View>
 
         {loading ? (

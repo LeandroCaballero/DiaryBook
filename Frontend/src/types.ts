@@ -2,7 +2,7 @@ import { Group } from "./interfaces/prisma.interfaces"
 
 export type AuthStackParamList = {
   Home: undefined
-  CreatePurchase: undefined
+  CreatePurchase: { group: Group; title: string; userInfo?: userInfo }
   Group: { group: Group; title: string }
   PurchaseDetails: { purchaseId: number }
   CreateGroup: undefined

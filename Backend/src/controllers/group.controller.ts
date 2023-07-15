@@ -102,6 +102,7 @@ export const addAdmin = async (req: Request, res: Response) => {
     },
     data: {
       Admins: { connect: { id: userId } },
+      Users: { disconnect: { id: userId } },
     },
     include: {
       Admins: true,

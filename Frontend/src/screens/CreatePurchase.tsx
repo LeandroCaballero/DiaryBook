@@ -29,10 +29,18 @@ import {
   PencilIcon,
 } from "react-native-heroicons/outline"
 import { SafeAreaView } from "react-native-safe-area-context"
-import { Group, Purchase, PurchaseItem } from "../interfaces/prisma.interfaces"
+import {
+  Group,
+  Purchase,
+  PurchaseItem,
+  User,
+} from "../interfaces/prisma.interfaces"
 import { NewPurchaseItem } from "../interfaces/createPurchases.interfaces"
 import { API_URL } from "../../config"
 import Toast from "react-native-toast-message"
+import { NativeStackScreenProps } from "@react-navigation/native-stack"
+import { AuthStackParamList } from "../types"
+import AsyncStorage from "@react-native-async-storage/async-storage"
 
 let dataTest = [
   {
@@ -62,7 +70,13 @@ let dataTest = [
   },
 ]
 
-const CreatePurchase = () => {
+type Props = NativeStackScreenProps<AuthStackParamList, "CreatePurchase">
+
+const CreatePurchase = ({
+  route: {
+    params: { group, userInfo },
+  },
+}: Props) => {
   const [date, setDate] = useState(new Date())
   // const [mode, setMode] = useState("date")
   const [showCalendar, setShowCalendar] = useState(false)
@@ -75,19 +89,24 @@ const CreatePurchase = () => {
   const [showCamera, setShowCamera] = useState(false)
   const [showPreviewModal, setShowPreviewModal] = useState(false)
 
+  // User shared
+  const [sharedUsers, setSharedUsers] = useState<
+    Array<{ user: User; checked: boolean }>
+  >([])
+
   const [modalEditNewItem, setModalEditNewItem] = useState<{
+    index: number
     state: boolean
-    newItem?: NewPurchaseItem
   }>({
+    index: 0,
     state: false,
-    newItem: undefined,
   })
 
   const [showNewPurchaseItem, setShowNewPurchaseItem] = useState(false)
   const [newPurchaseItem, setNewPurchaseItem] = useState<NewPurchaseItem>({
     name: "",
     quantity: "0",
-    shared: false,
+    forUsers: [],
     price: "0",
   })
 
@@ -105,16 +124,14 @@ const CreatePurchase = () => {
     dateBuy: "",
   })
 
-  // Dropdown
-  const [open, setOpen] = useState(false)
-  const [value, setValue] = useState(null)
-  const [items, setItems] = useState([
-    { label: "Apple", value: "apple" },
-    { label: "Banana", value: "banana" },
-  ])
-
   useEffect(() => {
-    fetchData()
+    // fetchData()
+
+    let usersData = group.Admins.concat(group.Users).map((user) => ({
+      user,
+      checked: false,
+    }))
+    setSharedUsers(usersData)
   }, [])
 
   const fetchData = async () => {
@@ -147,6 +164,25 @@ const CreatePurchase = () => {
   const [isEnabled, setIsEnabled] = useState(false)
   const toggleSwitch = () => setIsEnabled((previousState) => !previousState)
 
+  const toggleSwitchUserShared = (checked: boolean, i: number) => {
+    setSharedUsers((prevUsers) => {
+      const newArray = [...prevUsers]
+      newArray[i] = { ...newArray[i], checked }
+      return newArray
+    })
+  }
+
+  const changeNewItemInfo = (text: string, property: string) => {
+    setData((prevData) => {
+      const newArray = [...prevData.purchaseItems]
+      newArray[modalEditNewItem.index] = {
+        ...newArray[modalEditNewItem.index],
+        [property]: text,
+      }
+      return { ...prevData, purchaseItems: newArray }
+    })
+  }
+
   const savePurchaseItem = () => {
     setData({
       ...data,
@@ -164,7 +200,7 @@ const CreatePurchase = () => {
     setNewPurchaseItem({
       name: "",
       quantity: "0",
-      shared: false,
+      forUsers: [],
       price: "0",
     })
   }
@@ -242,7 +278,7 @@ const CreatePurchase = () => {
           name: el.description,
           price: el.unit_price,
           quantity: el.quantity,
-          shared: true,
+          forUsers: [],
         }
       })
 
@@ -266,8 +302,7 @@ const CreatePurchase = () => {
   return (
     <ScrollView className="p-3 bg-white h-full">
       <SafeAreaView>
-        {/* <Text className="text-white text-2xl text-center">Cargar compra</Text> */}
-        <Text className="">Nombre de la compra</Text>
+        <Text>Nombre de la compra</Text>
         <TextInput
           onChangeText={(e) => setData({ ...data, name: e })}
           value={data.name}
@@ -294,14 +329,14 @@ const CreatePurchase = () => {
               <Text className="">Nombre: {item.name}</Text>
               <Text className="">Precio: {item.price}</Text>
               <Text className="">Cantidad: {item.quantity}</Text>
-              <Text className="">Compartido{item.shared ? "Si" : "No"}</Text>
+              <Text className="">
+                Compartido{item.forUsers.length > 0 ? "Si" : "No"}
+              </Text>
             </View>
             <View className="w-1/3 flex flex-row">
               <Pressable
                 className="ml-auto mr-2 bg-white  rounded-full p-3 my-1 w-12 flex flex-row items-center justify-center"
-                onPress={() =>
-                  setModalEditNewItem({ state: true, newItem: item })
-                }
+                onPress={() => setModalEditNewItem({ index, state: true })}
               >
                 <PencilIcon size={20} color="#000000" />
               </Pressable>
@@ -360,15 +395,6 @@ const CreatePurchase = () => {
               />
             </View>
 
-            {/* <DropDownPicker
-              open={open}
-              value={value}
-              items={items}
-              setOpen={setOpen}
-              setValue={setValue}
-              setItems={setItems}
-            /> */}
-
             <View className="flex flex-row">
               <Pressable
                 className="border bg-white rounded-full p-3 my-1 w-12 flex flex-row items-center justify-center"
@@ -408,14 +434,9 @@ const CreatePurchase = () => {
           >
             <Text className="text-center">Guardar</Text>
           </Pressable>
-          {/* <Image
-            className="h-full"
-            source={{
-              uri: photoUri,
-            }}
-          /> */}
         </View>
 
+        {/* Modal camera */}
         <Modal
           animationType="slide"
           // transparent={true}
@@ -430,12 +451,6 @@ const CreatePurchase = () => {
               ref={(ref) => setCameraRef(ref)}
             >
               <View className="flex flex-row justify-end p-2">
-                {/* <Pressable
-                  className="bg-white rounded-full p-3 my-1 flex items-center justify-center h-10 w-10"
-                  onPress={toggleCameraType}
-                >
-                  <ArrowLeftIcon size={20} color="#000000" />
-                </Pressable> */}
                 <Pressable
                   className="bg-white rounded-full p-3 my-1 flex items-center justify-center h-10 w-10"
                   onPress={() => setShowCamera(false)}
@@ -454,6 +469,7 @@ const CreatePurchase = () => {
           </View>
         </Modal>
 
+        {/* Modal preview picture */}
         <Modal
           animationType="fade"
           // transparent={true}
@@ -477,7 +493,6 @@ const CreatePurchase = () => {
               >
                 <ArrowLeftIcon size={20} color="#FFFFFF" />
               </Pressable>
-              {/* <Text>Enviar</Text> */}
               <Pressable
                 className="flex items-center justify-center h-10 w-10 border border-white bg-transparent rounded-full m-2"
                 onPress={() => setShowPreviewModal(false)}
@@ -495,13 +510,12 @@ const CreatePurchase = () => {
           </View>
         </Modal>
 
+        {/* Edit item modal */}
         <Modal
           animationType="slide"
           transparent={true}
           visible={modalEditNewItem.state}
-          onRequestClose={() =>
-            setModalEditNewItem({ state: false, newItem: undefined })
-          }
+          onRequestClose={() => setModalEditNewItem({ state: false, index: 0 })}
         >
           <View
             className="flex flex-row items-center justify-center h-screen p-1"
@@ -511,88 +525,61 @@ const CreatePurchase = () => {
               <Text className="text-lg text-center">Editar Item</Text>
               <Text>Nombre</Text>
               <TextInput
-                // onChangeText={(e) => setData({ ...data, name: e })}
-                value={modalEditNewItem.newItem?.name}
+                onChangeText={(e) => changeNewItemInfo(e, "name")}
+                value={data.purchaseItems[modalEditNewItem.index]?.name}
                 placeholder="Ingrese un nombre..."
                 className="p-1 mt-1 rounded-lg bg-gray-50"
               />
-              <Text>Precio {modalEditNewItem.newItem?.price}</Text>
+              <Text>Precio</Text>
               <TextInput
-                // onChangeText={(e) =>
-                //   setNewPurchaseItem({ ...newPurchaseItem, quantity: e })
-                // }
-                value={modalEditNewItem.newItem?.price}
+                onChangeText={(e) => changeNewItemInfo(e, "price")}
+                value={data.purchaseItems[
+                  modalEditNewItem.index
+                ]?.price.toString()}
                 className="p-1 mt-1 rounded-lg bg-gray-50"
                 keyboardType="numeric"
               />
-              <Text>Cantidad {modalEditNewItem.newItem?.quantity}</Text>
+              <Text>Cantidad</Text>
               <TextInput
-                // onChangeText={(e) => setData({ ...data, name: e })}
-                value={modalEditNewItem.newItem?.quantity}
-                // placeholder="Ingrese un nombre..."
+                onChangeText={(e) => changeNewItemInfo(e, "quantity")}
+                value={data.purchaseItems[
+                  modalEditNewItem.index
+                ]?.quantity.toString()}
                 className="p-1 mt-1 rounded-lg bg-gray-50"
+                keyboardType="numeric"
               />
-              <View className="flex flex-row justify-between">
-                <Text>Es compartido</Text>
-                <Switch
-                  trackColor={{ false: "#767577", true: "#81b0ff" }}
-                  thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
-                  ios_backgroundColor="#3e3e3e"
-                  // onValueChange={toggleSwitch}
-                  value={modalEditNewItem.newItem?.shared}
-                />
-              </View>
-              {modalEditNewItem.newItem?.shared && (
-                <View>
-                  <Text>Elegir con quien compartir</Text>
+
+              {data.purchaseItems[modalEditNewItem.index]?.forUsers && (
+                <View className="mt-1.5">
+                  <Text>Para quien es?</Text>
+                  <View className="flex gap-y-1.5 mt-1">
+                    {sharedUsers.map((el, i) => (
+                      <View
+                        key={i}
+                        className="flex flex-row justify-between items-center border"
+                      >
+                        <Text className="pl-3">
+                          {el.user.name == userInfo?.name
+                            ? "Para mi"
+                            : el.user.name}
+                        </Text>
+                        <Switch
+                          trackColor={{ false: "#767577", true: "#81b0ff" }}
+                          thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
+                          ios_backgroundColor="#3e3e3e"
+                          onValueChange={(checked) =>
+                            toggleSwitchUserShared(checked, i)
+                          }
+                          value={el.checked}
+                        />
+                      </View>
+                    ))}
+                  </View>
                 </View>
               )}
             </View>
           </View>
         </Modal>
-
-        {/* {!showCamera ? (
-          <View className="h-full">
-            <Pressable
-              className="border bg-white rounded-lg p-2 my-1 w-1/2"
-              onPress={takePicture}
-            >
-              <Text className="text-center">Foto a ticket</Text>
-            </Pressable>
-            <Pressable
-              className="border bg-white rounded-lg p-2 my-1 w-1/2"
-              onPress={sendPhoto}
-            >
-              <Text className="text-center">Enviar</Text>
-            </Pressable>
-            <Image
-              className="h-full"
-              source={{
-                uri: photoUri,
-              }}
-            />
-          </View>
-        ) : (
-          <View className="h-full">
-            <Camera
-              className="h-screen"
-              type={type}
-              ref={(ref) => setCameraRef(ref)}
-            >
-              <View>
-                <Pressable onPress={takePhoto}>
-                  <Text className="text-white text-lg">Tomar</Text>
-                </Pressable>
-                <Pressable onPress={toggleCameraType}>
-                  <Text className="text-white text-lg">Flip Camera</Text>
-                </Pressable>
-                <Pressable onPress={() => setShowCamera(false)}>
-                  <Text className="text-white text-lg">Cancelar</Text>
-                </Pressable>
-              </View>
-            </Camera>
-          </View>
-        )} */}
       </SafeAreaView>
     </ScrollView>
   )
