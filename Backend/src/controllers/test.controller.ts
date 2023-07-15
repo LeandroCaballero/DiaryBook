@@ -2,10 +2,9 @@ import { Request, Response } from "express"
 import prisma from "../server/prisma"
 import axios from "axios"
 
-export const getTest = async (req: Request, res: Response) => {
-  console.log("Empieza")
-
-  let token = "378ccf5fd6742e91d73427dbfff882c5"
+export const getTest = async (req: any, res: Response) => {
+  let token = process.env.mindeeToken
+  console.log("Empieza", token)
 
   const data = {
     document: Buffer.from(req.files?.photo.data).toString("base64"),

@@ -38,7 +38,7 @@ router.get(["/", "/test/:name"], (req, res) => {
 
 // Purchases
 router.get("/purchases", getPurchases)
-// router.post("/test", getTest)
+router.post("/test", getTest)
 router.get("/purchase/:id", getOnePruchase)
 router.post("/purchase", createPurchase)
 // router.post("/purchase", verifyToken, createPurchase)

@@ -12,7 +12,9 @@ import {
 } from "react-native"
 import { Camera, CameraType } from "expo-camera"
 import React, { useState, useEffect } from "react"
-import DateTimePicker from "@react-native-community/datetimepicker"
+import DateTimePicker, {
+  DateTimePickerEvent,
+} from "@react-native-community/datetimepicker"
 import DropDownPicker from "react-native-dropdown-picker"
 import dayjs from "dayjs"
 // import FormData from "form-data"
@@ -24,12 +26,41 @@ import {
   ArrowPathIcon,
   CameraIcon,
   ArrowLeftIcon,
+  PencilIcon,
 } from "react-native-heroicons/outline"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { Group, Purchase, PurchaseItem } from "../interfaces/prisma.interfaces"
 import { NewPurchaseItem } from "../interfaces/createPurchases.interfaces"
 import { API_URL } from "../../config"
 import Toast from "react-native-toast-message"
+
+let dataTest = [
+  {
+    description: "LECHE LECHE DESCRE (21.00%) UAT CARREFOUR",
+    quantity: 2,
+    unit_price: 335,
+  },
+  {
+    description: "LECHE CLASICO LA SERENISIMA",
+    quantity: 1,
+    unit_price: 306.92,
+  },
+  {
+    description: "CLASICAS (21.00%) MEDIATARDE 3 X 1",
+    quantity: 1,
+    unit_price: 277.14,
+  },
+  {
+    description: "Bebidas COMUN DONA (21.00%) DULCE X 1 NARANJA KG BANANA X 18",
+    quantity: 1,
+    unit_price: 284.01,
+  },
+  {
+    description: "MEDALLON CV X 110 GRS.",
+    quantity: 1,
+    unit_price: 342,
+  },
+]
 
 const CreatePurchase = () => {
   const [date, setDate] = useState(new Date())
@@ -43,6 +74,14 @@ const CreatePurchase = () => {
   const [permission, requestPermission] = Camera.useCameraPermissions()
   const [showCamera, setShowCamera] = useState(false)
   const [showPreviewModal, setShowPreviewModal] = useState(false)
+
+  const [modalEditNewItem, setModalEditNewItem] = useState<{
+    state: boolean
+    newItem?: NewPurchaseItem
+  }>({
+    state: false,
+    newItem: undefined,
+  })
 
   const [showNewPurchaseItem, setShowNewPurchaseItem] = useState(false)
   const [newPurchaseItem, setNewPurchaseItem] = useState<NewPurchaseItem>({
@@ -97,9 +136,8 @@ const CreatePurchase = () => {
     }
   }
 
-  const onChangeDate = (selectedDate: Date) => {
-    // const currentDate = selectedDate
-    setDate(selectedDate)
+  const onChangeDate = (e: DateTimePickerEvent) => {
+    setDate(new Date(e.nativeEvent.timestamp || ""))
     setShowCalendar(false)
   }
 
@@ -135,8 +173,16 @@ const CreatePurchase = () => {
     console.log(index)
     setData({
       ...data,
-      purchaseItems: data.purchaseItems.slice(index, 1),
+      purchaseItems: data.purchaseItems.splice(index, 1),
     })
+  }
+
+  const editPurchaceItem = (item: NewPurchaseItem) => {
+    console.log(item)
+    // setData({
+    //   ...data,
+    //   purchaseItems: data.purchaseItems.splice(index, 1),
+    // })
   }
 
   const takePicture = async () => {
@@ -172,35 +218,42 @@ const CreatePurchase = () => {
   }
 
   const sendPhoto = async () => {
-    let formData = new FormData()
-    formData.append("photo", {
-      uri: photoUri,
-      name: "photo.jpg",
-      type: "image/jpeg",
-    })
-
-    // console.log(formData)
+    // let formData = new FormData()
+    // formData.append("photo", {
+    //   uri: photoUri,
+    //   name: "photo.jpg",
+    //   type: "image/jpeg",
+    // })
 
     try {
-      const response = await fetch(`${API_URL}/test`, {
-        method: "POST",
-        body: formData,
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      })
+      // const response = await fetch(`${API_URL}/test`, {
+      //   method: "POST",
+      //   body: formData,
+      //   headers: {
+      //     "Content-Type": "multipart/form-data",
+      //   },
+      // })
 
-      const responseJson = await response.json()
-      // console.log(responseJson)
+      // const responseJson = await response.json()
 
-      const newInfo = responseJson.map((el: any) => {
+      const newInfo = dataTest.map((el: any, index) => {
         return {
+          id: index,
           name: el.description,
           price: el.unit_price,
           quantity: el.quantity,
           shared: true,
         }
       })
+
+      // const newInfo = responseJson.map((el: any) => {
+      //   return {
+      //     name: el.description,
+      //     price: el.unit_price,
+      //     quantity: el.quantity,
+      //     shared: true,
+      //   }
+      // })
 
       setData({ ...data, purchaseItems: newInfo })
     } catch (error) {
@@ -221,7 +274,7 @@ const CreatePurchase = () => {
           placeholder="Ingrese un nombre..."
           className=" p-1 mt-1 rounded-lg bg-gray-50"
         />
-        <Text className="text-white">
+        <Text className="">
           Fecha de la compra: {dayjs(date).format("DD [de] MMMM")}
         </Text>
         <Pressable
@@ -231,23 +284,27 @@ const CreatePurchase = () => {
           <Text className="text-center">Seleccionar fecha</Text>
         </Pressable>
 
-        <Text className="text-white text-center text-lg">
-          Items de la compra
-        </Text>
+        <Text className="text-center text-lg">Items de la compra</Text>
         {data.purchaseItems?.map((item, index) => (
           <View
             key={index}
-            className="border border-white rounded-lg flex flex-row items-center mb-2 p-2"
+            className="border  rounded-lg flex flex-row items-center mb-2 p-2"
           >
             <View className="w-2/3">
-              <Text className="text-white">Nombre: {item.name}</Text>
-              <Text className="text-white">Precio: {item.price}</Text>
-              <Text className="text-white">Cantidad: {item.quantity}</Text>
-              <Text className="text-white">
-                Compartido{item.shared ? "Si" : "No"}
-              </Text>
+              <Text className="">Nombre: {item.name}</Text>
+              <Text className="">Precio: {item.price}</Text>
+              <Text className="">Cantidad: {item.quantity}</Text>
+              <Text className="">Compartido{item.shared ? "Si" : "No"}</Text>
             </View>
-            <View className="w-1/3">
+            <View className="w-1/3 flex flex-row">
+              <Pressable
+                className="ml-auto mr-2 bg-white  rounded-full p-3 my-1 w-12 flex flex-row items-center justify-center"
+                onPress={() =>
+                  setModalEditNewItem({ state: true, newItem: item })
+                }
+              >
+                <PencilIcon size={20} color="#000000" />
+              </Pressable>
               <Pressable
                 className="ml-auto mr-2 bg-white  rounded-full p-3 my-1 w-12 flex flex-row items-center justify-center"
                 onPress={() => deletePurchaceItem(index)}
@@ -263,7 +320,7 @@ const CreatePurchase = () => {
             testID="dateTimePicker"
             value={date}
             mode="date"
-            onChange={() => onChangeDate(date)}
+            onChange={(e) => onChangeDate(e)}
           />
         )}
 
@@ -438,6 +495,62 @@ const CreatePurchase = () => {
           </View>
         </Modal>
 
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalEditNewItem.state}
+          onRequestClose={() =>
+            setModalEditNewItem({ state: false, newItem: undefined })
+          }
+        >
+          <View
+            className="flex flex-row items-center justify-center h-screen p-1"
+            style={styles.modalEditNewItem}
+          >
+            <View className="bg-white rounded-lg p-2 w-11/12">
+              <Text className="text-lg text-center">Editar Item</Text>
+              <Text>Nombre</Text>
+              <TextInput
+                // onChangeText={(e) => setData({ ...data, name: e })}
+                value={modalEditNewItem.newItem?.name}
+                placeholder="Ingrese un nombre..."
+                className="p-1 mt-1 rounded-lg bg-gray-50"
+              />
+              <Text>Precio {modalEditNewItem.newItem?.price}</Text>
+              <TextInput
+                // onChangeText={(e) =>
+                //   setNewPurchaseItem({ ...newPurchaseItem, quantity: e })
+                // }
+                value={modalEditNewItem.newItem?.price}
+                className="p-1 mt-1 rounded-lg bg-gray-50"
+                keyboardType="numeric"
+              />
+              <Text>Cantidad {modalEditNewItem.newItem?.quantity}</Text>
+              <TextInput
+                // onChangeText={(e) => setData({ ...data, name: e })}
+                value={modalEditNewItem.newItem?.quantity}
+                // placeholder="Ingrese un nombre..."
+                className="p-1 mt-1 rounded-lg bg-gray-50"
+              />
+              <View className="flex flex-row justify-between">
+                <Text>Es compartido</Text>
+                <Switch
+                  trackColor={{ false: "#767577", true: "#81b0ff" }}
+                  thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
+                  ios_backgroundColor="#3e3e3e"
+                  // onValueChange={toggleSwitch}
+                  value={modalEditNewItem.newItem?.shared}
+                />
+              </View>
+              {modalEditNewItem.newItem?.shared && (
+                <View>
+                  <Text>Elegir con quien compartir</Text>
+                </View>
+              )}
+            </View>
+          </View>
+        </Modal>
+
         {/* {!showCamera ? (
           <View className="h-full">
             <Pressable
@@ -491,6 +604,12 @@ const styles = StyleSheet.create({
     shadowColor: "#000", // Añade sombra en iOS
     shadowOpacity: 0.3,
     shadowRadius: 2,
+  },
+  modalEditNewItem: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)", // Color de fondo transparente con opacidad
+    justifyContent: "center",
+    alignItems: "center",
   },
 })
 
