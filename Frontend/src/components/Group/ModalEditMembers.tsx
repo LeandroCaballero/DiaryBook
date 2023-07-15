@@ -5,7 +5,6 @@ import {
   Pressable,
   Text,
   ScrollView,
-  ToastAndroid,
   Alert,
 } from "react-native"
 import React from "react"
@@ -17,14 +16,16 @@ import {
 } from "react-native-heroicons/outline"
 import { Group } from "../../interfaces/prisma.interfaces"
 import { API_URL } from "../../../config"
+import Toast from "react-native-toast-message"
 
 interface Props {
   group: Group
   show: boolean
   closeModal: () => void
+  navigation: any
 }
 
-const ModalEditMembers = ({ group, show, closeModal }: Props) => {
+const ModalEditMembers = ({ group, show, closeModal, navigation }: Props) => {
   const actionMember = async (
     message: string,
     userId: number,
@@ -55,15 +56,23 @@ const ModalEditMembers = ({ group, show, closeModal }: Props) => {
             const responseToJSON = await response.json()
 
             if (response?.ok) {
-              console.log("todo ok")
-              ToastAndroid.show(responseToJSON.message, ToastAndroid.SHORT)
-
+              // console.log("todo ok")
+              Toast.show({
+                type: "success",
+                text1: "Excelente!",
+                text2: responseToJSON.message,
+              })
+              navigation.navigate("Home")
               // closeModal()
             }
           } catch (error: any) {
             // setLoading(false)
             console.log("ERROR", error)
-            ToastAndroid.show(error.message, ToastAndroid.SHORT)
+            Toast.show({
+              type: "error",
+              text1: "Hubo un error",
+              text2: error.message,
+            })
           }
         },
       },

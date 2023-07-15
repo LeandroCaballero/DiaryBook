@@ -4,7 +4,6 @@ import {
   TextInput,
   Pressable,
   Switch,
-  ToastAndroid,
   ImageBackground,
   ScrollView,
   Modal,
@@ -30,6 +29,7 @@ import { SafeAreaView } from "react-native-safe-area-context"
 import { Group, Purchase, PurchaseItem } from "../interfaces/prisma.interfaces"
 import { NewPurchaseItem } from "../interfaces/createPurchases.interfaces"
 import { API_URL } from "../../config"
+import Toast from "react-native-toast-message"
 
 const CreatePurchase = () => {
   const [date, setDate] = useState(new Date())
@@ -140,14 +140,17 @@ const CreatePurchase = () => {
   }
 
   const takePicture = async () => {
-    // ToastAndroid.show("Test", ToastAndroid.SHORT)
     if (permission) {
       setShowCamera(true)
     } else {
       await requestPermission()
       permission
         ? setShowCamera(true)
-        : ToastAndroid.show("Cámara denegada!", ToastAndroid.SHORT)
+        : Toast.show({
+            type: "error",
+            text1: "Hubo un error",
+            text2: "Cámara denegada!",
+          })
     }
   }
 

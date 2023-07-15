@@ -6,7 +6,6 @@ import {
   TextInput,
   Button,
   ActivityIndicator,
-  ToastAndroid,
 } from "react-native"
 import React, { useLayoutEffect, useState, useContext } from "react"
 import { useNavigation } from "@react-navigation/native"
@@ -15,6 +14,7 @@ import { AuthContext } from "../context/AuthContext"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import { AuthenticationStackParamList } from "../types"
 import { API_URL } from "../../config"
+import Toast from "react-native-toast-message"
 
 // Mantén tus compras bajo control
 
@@ -54,15 +54,20 @@ const Login = ({ navigation }: Props) => {
 
         setIsLogged && setIsLogged(true)
       } else {
-        ToastAndroid.show(json.message, ToastAndroid.SHORT)
+        Toast.show({
+          type: "error",
+          text1: "Hubo un error",
+          text2: json.message,
+        })
         setLoading(false)
       }
       // console.log(json)
     } catch (error) {
-      ToastAndroid.show(
-        "Hubo un error, comuniquese con Lean!",
-        ToastAndroid.SHORT
-      )
+      Toast.show({
+        type: "error",
+        text1: "Hubo un error",
+        text2: "Hubo un error, comuniquese con Lean!",
+      })
       setLoading(false)
       console.error(error)
     }

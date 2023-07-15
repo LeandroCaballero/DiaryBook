@@ -5,7 +5,6 @@ import {
   TextInput,
   TouchableOpacity,
   Image,
-  ToastAndroid,
 } from "react-native"
 import React, { useLayoutEffect, useState, useEffect } from "react"
 import AsyncStorage from "@react-native-async-storage/async-storage"
@@ -13,6 +12,7 @@ import { zod_checkNameGroup } from "../zod/zod_createGroup"
 import { API_URL } from "../../config"
 import { userInfo } from "../types"
 import { Group } from "../interfaces/prisma.interfaces"
+import Toast from "react-native-toast-message"
 // Mantén tus compras bajo control
 
 const CreateGroup = ({ navigation }: { navigation: any }) => {
@@ -135,10 +135,11 @@ const CreateGroup = ({ navigation }: { navigation: any }) => {
   const createGroup = async () => {
     if (nameGroup != textAvailability?.name) {
       setTextAvailability({ ...textAvailability, available: false })
-      ToastAndroid.show(
-        "Nombre incorrecto no te hagas el vivo",
-        ToastAndroid.SHORT
-      )
+      Toast.show({
+        type: "error",
+        text1: "Hubo un error",
+        text2: "Nombre incorrecto no te hagas el vivo",
+      })
       return
     }
     try {
@@ -158,30 +159,29 @@ const CreateGroup = ({ navigation }: { navigation: any }) => {
       })
 
       if (response?.ok) {
-        console.log("todo ok")
+        Toast.show({
+          type: "success",
+          text1: "Éxito!",
+          text2: "Grupo creado con éxito",
+        })
+
+        navigation.navigate("Home")
       }
     } catch (error: any) {
       setError(JSON.parse(error?.message)[0]?.message)
       setTextAvailability(undefined)
-    } finally {
-      setLoading(false)
-      ToastAndroid.show("Grupo creado con éxito", ToastAndroid.SHORT)
-      navigation.navigate("Home")
     }
   }
 
   const joinGroup = async () => {
     if (nameExistGroup != textExistGroup?.group?.name) {
-      console.log(
-        "no te hagas el vivo",
-        nameExistGroup,
-        textExistGroup?.group?.name
-      )
       setTextExistGroup({ ...textExistGroup, exist: false })
-      ToastAndroid.show(
-        "Nombre incorrecto no te hagas el vivo",
-        ToastAndroid.SHORT
-      )
+
+      Toast.show({
+        type: "error",
+        text1: "Hubo un error",
+        text2: "Nombre incorrecto no te hagas el vivo",
+      })
       return
     }
 
@@ -205,11 +205,19 @@ const CreateGroup = ({ navigation }: { navigation: any }) => {
 
       if (response?.ok) {
         setLoading(false)
-        ToastAndroid.show(message, ToastAndroid.SHORT)
+        Toast.show({
+          type: "success",
+          text1: "Excelente!",
+          text2: message,
+        })
         navigation.navigate("Home")
       } else {
         setLoading(false)
-        ToastAndroid.show(message, ToastAndroid.SHORT)
+        Toast.show({
+          type: "error",
+          text1: "Hubo un error",
+          text2: message,
+        })
       }
     } catch (error: any) {
       setError(JSON.parse(error?.message)[0]?.message)

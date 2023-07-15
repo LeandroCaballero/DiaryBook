@@ -1,11 +1,4 @@
-import {
-  View,
-  Text,
-  Image,
-  TouchableOpacity,
-  ToastAndroid,
-  SafeAreaView,
-} from "react-native"
+import { View, Text, Image, TouchableOpacity, SafeAreaView } from "react-native"
 import React, { useContext, useEffect, useState } from "react"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import * as ImagePicker from "expo-image-picker"
@@ -13,6 +6,7 @@ import { API_URL } from "../../config"
 import { AuthContext } from "../context/AuthContext"
 import { userInfo } from "../types"
 import { Cog8ToothIcon } from "react-native-heroicons/outline"
+import Toast from "react-native-toast-message"
 
 const Profile = () => {
   const [user, setUser] = useState<userInfo>({
@@ -66,17 +60,21 @@ const Profile = () => {
 
         setUser({ ...user, profileImage: result.assets[0].uri })
 
-        console.log("RESPONSE", json)
-
-        ToastAndroid.show(json.message, ToastAndroid.SHORT)
+        // console.log("RESPONSE", json)
+        Toast.show({
+          type: "success",
+          text1: "Bien!",
+          text2: json.message,
+        })
       } catch (error) {
-        ToastAndroid.show(
-          "Hubo un error, comuniquese con Lean!",
-          ToastAndroid.SHORT
-        )
+        Toast.show({
+          type: "error",
+          text1: "Hubo un error",
+          text2: "Comuniquese con Lean!",
+        })
+
         console.log("ERROR Image", error)
       }
-      // console.log("URI", result.assets[0].uri)
     }
   }
 

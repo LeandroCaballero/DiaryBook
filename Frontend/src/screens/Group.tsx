@@ -9,7 +9,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack"
 
 type Props = NativeStackScreenProps<AuthStackParamList, "Group">
 
-const Group = ({ route }: Props) => {
+const Group = ({ route, navigation }: Props) => {
   const { group } = route.params
 
   const [user, setUser] = useState<{
@@ -25,6 +25,15 @@ const Group = ({ route }: Props) => {
       setUser(JSON.parse(user || ""))
     )
   }, [])
+
+  // const closeModal = (type: string) =>{
+  //   if (type == 'actionSuccess') {
+  //     setShowEditMemberModal(false)
+  //     na
+  //   }else{
+
+  //   }
+  // }
 
   return (
     <SafeAreaView className="p-3 h-full">
@@ -70,6 +79,7 @@ const Group = ({ route }: Props) => {
           show={showEditMemberModal}
           closeModal={() => setShowEditMemberModal(false)}
           group={group}
+          navigation={navigation}
         />
       </ScrollView>
     </SafeAreaView>

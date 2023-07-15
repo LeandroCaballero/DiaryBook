@@ -6,7 +6,6 @@ import {
   TextInput,
   Button,
   ActivityIndicator,
-  ToastAndroid,
   TouchableOpacity,
 } from "react-native"
 import React, { useLayoutEffect, useState } from "react"
@@ -16,6 +15,7 @@ import { zod_registerUser } from "../zod/zod_auth"
 import { AuthenticationStackParamList } from "../types"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import { API_URL } from "../../config"
+import Toast from "react-native-toast-message"
 
 type Props = NativeStackScreenProps<AuthenticationStackParamList, "Register">
 
@@ -58,19 +58,27 @@ const Register = ({ navigation }: Props) => {
       const json = await response.json()
       // console.log(response)
       if (response?.ok) {
-        ToastAndroid.show(json.message, ToastAndroid.LONG)
+        Toast.show({
+          type: "success",
+          text1: "Todo bien!",
+          text2: json.message,
+        })
         navigation.navigate("Login")
-        // setTimeout(() => navigation.navigate("Login"), 1500)
       } else {
-        ToastAndroid.show(json.message, ToastAndroid.SHORT)
+        Toast.show({
+          type: "error",
+          text1: "Hubo un error!",
+          text2: json.message,
+        })
       }
       setLoading(false)
       // console.log(json)
     } catch (error) {
-      ToastAndroid.show(
-        "Hubo un error, comuniquese con Lean!",
-        ToastAndroid.SHORT
-      )
+      Toast.show({
+        type: "error",
+        text1: "Hubo un error",
+        text2: "Comuniquese con Lean!",
+      })
       console.error(error)
       setLoading(false)
     }
