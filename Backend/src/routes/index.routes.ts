@@ -4,6 +4,7 @@ import {
   login,
   getStatus,
   confirmEmail,
+  changePassword,
 } from "../controllers/auth.controller"
 import * as groupController from "../controllers/group.controller"
 import { getProducts } from "../controllers/product.controller"
@@ -17,14 +18,27 @@ import {
 
 import { verifyToken } from "../middleware/auth"
 import { uploadLogo } from "../controllers/upload.controller"
+import rateLimit from "express-rate-limit"
 
 const router = Router()
+
+const limiter = rateLimit({
+  windowMs: 3 * 60 * 1000, // 3 minutes
+  max: 3,
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers,
+  handler: (request, response) =>
+    response
+      .status(429)
+      .send("Demasiadas solicitudes. Por favor, inténtalo de nuevo más tarde."),
+})
 
 //Auth
 router.post("/register", register)
 router.post("/login", login)
-router.get("/status", verifyToken, getStatus)
+router.get("/status", [limiter, verifyToken], getStatus)
 router.get("/confirmEmail/:id/:token", confirmEmail)
+router.post("/resetPassword", changePassword)
 
 router.get(["/", "/test/:name"], (req, res) => {
   let greeting = "<h1>Hello From Node with Express!</h1>"

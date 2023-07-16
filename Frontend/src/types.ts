@@ -7,6 +7,7 @@ export type AuthStackParamList = {
   PurchaseDetails: { purchaseId: number }
   CreateGroup: undefined
   Profile: undefined
+  Settings: { user: userInfo }
 }
 
 export type AuthenticationStackParamList = {

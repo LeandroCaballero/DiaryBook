@@ -151,3 +151,42 @@ export const confirmEmail = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Error en el servidor" })
   }
 }
+
+export const changePassword = async (req: Request, res: Response) => {
+  const { userId, oldPassword, newPassword } = req.body
+
+  const existUser = await prisma.user.findFirst({
+    where: {
+      id: userId,
+    },
+  })
+
+  if (existUser) {
+    if (await bcrypt.compare(oldPassword, existUser.password)) {
+      let encryptedPassword = await bcrypt.hash(newPassword, 10)
+
+      try {
+        await prisma.user.update({
+          where: {
+            id: userId,
+          },
+          data: {
+            password: encryptedPassword,
+          },
+        })
+        return res
+          .status(200)
+          .json({ message: "Contraseña cambiada con éxito!" })
+      } catch (error) {
+        console.log("ERROR CHANGE PASS", error)
+        return res.status(500).json({
+          message: "Hubo un error al cambiar la contraseña, intente más tarde",
+        })
+      }
+    } else {
+      return res
+        .status(403)
+        .json({ message: "La contraseña actual es incorrecta!" })
+    }
+  }
+}

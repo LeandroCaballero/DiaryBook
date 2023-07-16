@@ -7,6 +7,7 @@ import CreateGroup from "../screens/CreateGroup"
 import Group from "../screens/Group"
 import { AuthStackParamList } from "../types"
 import Profile from "../screens/Profile"
+import Settings from "../screens/Settings"
 
 const Stack = createNativeStackNavigator<AuthStackParamList>()
 
@@ -19,6 +20,11 @@ const AuthStack = () => {
           name="Profile"
           component={Profile}
           options={{ title: "Mi perfil" }}
+        />
+        <Stack.Screen
+          name="Settings"
+          component={Settings}
+          options={{ title: "Configuración" }}
         />
         <Stack.Screen
           options={({ route }) => ({ title: route.params.title })}

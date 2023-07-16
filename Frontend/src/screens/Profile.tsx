@@ -4,11 +4,14 @@ import AsyncStorage from "@react-native-async-storage/async-storage"
 import * as ImagePicker from "expo-image-picker"
 import { API_URL } from "../../config"
 import { AuthContext } from "../context/AuthContext"
-import { userInfo } from "../types"
+import { AuthStackParamList, userInfo } from "../types"
 import { Cog8ToothIcon } from "react-native-heroicons/outline"
 import Toast from "react-native-toast-message"
+import { NativeStackScreenProps } from "@react-navigation/native-stack"
 
-const Profile = () => {
+type Props = NativeStackScreenProps<AuthStackParamList, "Profile">
+
+const Profile = ({ navigation }: Props) => {
   const [user, setUser] = useState<userInfo>({
     id: "",
     name: "",
@@ -113,7 +116,10 @@ const Profile = () => {
 
       <Text className="text-center text-xl mt-2">{user?.name}</Text>
       <View className="flex flex-row mt-10 justify-center">
-        <TouchableOpacity className="border border-gray-400 rounded-full px-3 py-1 flex flex-row gap-x-1">
+        <TouchableOpacity
+          onPress={() => navigation.navigate("Settings", { user })}
+          className="border border-gray-400 rounded-full px-3 py-1 flex flex-row gap-x-1"
+        >
           <Cog8ToothIcon size={20} color="#000000" />
           <Text>Configuración</Text>
         </TouchableOpacity>
