@@ -164,11 +164,26 @@ const CreatePurchase = ({
   const [isEnabled, setIsEnabled] = useState(false)
   const toggleSwitch = () => setIsEnabled((previousState) => !previousState)
 
-  const toggleSwitchUserShared = (checked: boolean, i: number) => {
-    setSharedUsers((prevUsers) => {
-      const newArray = [...prevUsers]
-      newArray[i] = { ...newArray[i], checked }
-      return newArray
+  const toggleSwitchUserShared = (checked: boolean, indexUser: number) => {
+    // setSharedUsers((prevUsers) => {
+    //   const newArray = [...prevUsers]
+    //   newArray[i] = { ...newArray[i], checked }
+    //   return newArray
+    // })
+
+    setData((prevData) => {
+      const prevPurchaseItemToEdit = prevData.purchaseItems
+
+      prevPurchaseItemToEdit[modalEditNewItem.index].forUsers[indexUser] = {
+        user: prevPurchaseItemToEdit[modalEditNewItem.index].forUsers[indexUser]
+          .user,
+        checked,
+      }
+
+      console.log("INDEX", modalEditNewItem.index, indexUser)
+      console.log(prevPurchaseItemToEdit[modalEditNewItem.index].forUsers)
+
+      return { ...prevData, purchaseItems: prevPurchaseItemToEdit }
     })
   }
 
@@ -278,7 +293,7 @@ const CreatePurchase = ({
           name: el.description,
           price: el.unit_price,
           quantity: el.quantity,
-          forUsers: [],
+          forUsers: sharedUsers,
         }
       })
 
@@ -553,27 +568,29 @@ const CreatePurchase = ({
                 <View className="mt-1.5">
                   <Text>Para quien es?</Text>
                   <View className="flex gap-y-1.5 mt-1">
-                    {sharedUsers.map((el, i) => (
-                      <View
-                        key={i}
-                        className="flex flex-row justify-between items-center border"
-                      >
-                        <Text className="pl-3">
-                          {el.user.name == userInfo?.name
-                            ? "Para mi"
-                            : el.user.name}
-                        </Text>
-                        <Switch
-                          trackColor={{ false: "#767577", true: "#81b0ff" }}
-                          thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
-                          ios_backgroundColor="#3e3e3e"
-                          onValueChange={(checked) =>
-                            toggleSwitchUserShared(checked, i)
-                          }
-                          value={el.checked}
-                        />
-                      </View>
-                    ))}
+                    {data.purchaseItems[modalEditNewItem.index]?.forUsers.map(
+                      (el, i) => (
+                        <View
+                          key={i}
+                          className="flex flex-row justify-between items-center border"
+                        >
+                          <Text className="pl-3">
+                            {el.user.name == userInfo?.name
+                              ? "Para mi"
+                              : el.user.name}
+                          </Text>
+                          <Switch
+                            trackColor={{ false: "#767577", true: "#81b0ff" }}
+                            thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
+                            ios_backgroundColor="#3e3e3e"
+                            onValueChange={(checked) =>
+                              toggleSwitchUserShared(checked, i)
+                            }
+                            value={el.checked}
+                          />
+                        </View>
+                      )
+                    )}
                   </View>
                 </View>
               )}
