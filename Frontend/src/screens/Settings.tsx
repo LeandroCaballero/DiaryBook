@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, Modal, TextInput } from "react-native"
-import React, { useState } from "react"
+import React, { useEffect, useState, useRef, Ref } from "react"
 import { EyeIcon, EyeSlashIcon } from "react-native-heroicons/outline"
 import { Toast } from "react-native-toast-message/lib/src/Toast"
 import { API_URL } from "../../config"
@@ -28,6 +28,39 @@ const Settings = ({
     },
   })
 
+  const [disabledButtonSave, setDisabledButtonSave] = useState(true)
+
+  // Modal recover
+  const [modalRecoverPassword, setModalRecoverPassword] = useState({
+    visible: false,
+    data: {
+      email: "",
+      code: { otp: { 1: "", 2: "", 3: "", 4: "" }, hidden: true },
+      newPassword: { text: "", hidden: true },
+      repeatNewPassword: { text: "", hidden: true },
+    },
+  })
+  const firstInputCode = useRef<TextInput>(null)
+  const secondInputCode = useRef<TextInput>(null)
+  const thirdInputCode = useRef<TextInput>(null)
+  const fourthInputCode = useRef<TextInput>(null)
+
+  const [inputCodeFocused, setInputCodeFocused] =
+    useState<React.RefObject<TextInput>>()
+
+  useEffect(() => {
+    let { oldPassword, newPassword, repeatNewPassword } = modalNewPassword.data
+    if (
+      oldPassword.text.length != 0 &&
+      newPassword.text.length != 0 &&
+      repeatNewPassword.text.length != 0
+    ) {
+      setDisabledButtonSave(false)
+    } else {
+      setDisabledButtonSave(true)
+    }
+  }, [modalNewPassword.data])
+
   const onChange = (property: TypeProperties, password: string) => {
     setModalNewPassword({
       ...modalNewPassword,
@@ -36,6 +69,31 @@ const Settings = ({
         [property]: { ...modalNewPassword.data[property], text: password },
       },
     })
+  }
+
+  const onChangeInputCode = (
+    property: number,
+    code: string,
+    nextRef?: React.RefObject<TextInput>,
+    prevRef?: React.RefObject<TextInput>
+  ) => {
+    setModalRecoverPassword({
+      ...modalRecoverPassword,
+      data: {
+        ...modalRecoverPassword.data,
+        code: {
+          ...modalRecoverPassword.data.code,
+          otp: { ...modalRecoverPassword.data.code.otp, [property]: code },
+        },
+      },
+    })
+
+    if (nextRef) {
+      nextRef.current?.focus()
+      return
+    }
+
+    prevRef && prevRef.current?.focus()
   }
 
   const setHiddenPassword = (property: TypeProperties) => {
@@ -122,7 +180,12 @@ const Settings = ({
         >
           <Text>Cambiar contraseña</Text>
         </TouchableOpacity>
-        <TouchableOpacity className="p-3 border-b border-gray-400">
+        <TouchableOpacity
+          className="p-3 border-b border-gray-400"
+          onPress={() =>
+            setModalRecoverPassword({ ...modalRecoverPassword, visible: true })
+          }
+        >
           <Text>Recuperar contraseña</Text>
         </TouchableOpacity>
       </View>
@@ -144,7 +207,7 @@ const Settings = ({
               value={modalNewPassword.data?.oldPassword.text}
               autoCorrect={false}
               className="w-11/12 px-1 mt-1 text-lg"
-              secureTextEntry={modalNewPassword.data?.oldPassword.hidden}
+              secureTextEntry={modalNewPassword.data.oldPassword.hidden}
             />
             {modalNewPassword.data?.oldPassword.hidden ? (
               <EyeIcon
@@ -162,6 +225,176 @@ const Settings = ({
               />
             )}
           </View>
+          <Text className="mt-5">Ingresá tu nueva contraseña</Text>
+          <View className="w-11/12 px-1 mt-1 border-b border-blue-500 flex flex-row">
+            <TextInput
+              onChangeText={(e) => onChange(TypeProperties.newPassword, e)}
+              value={modalNewPassword.data?.newPassword.text}
+              className="w-11/12 px-1 mt-1 text-lg"
+              autoCorrect={false}
+              secureTextEntry={modalNewPassword.data.newPassword.hidden}
+            />
+            {modalNewPassword.data?.newPassword.hidden ? (
+              <EyeIcon
+                className="w-1/12"
+                size={25}
+                color="#000000"
+                onPress={(e) => setHiddenPassword(TypeProperties.newPassword)}
+              />
+            ) : (
+              <EyeSlashIcon
+                className="w-1/12"
+                size={25}
+                color="#000000"
+                onPress={(e) => setHiddenPassword(TypeProperties.newPassword)}
+              />
+            )}
+          </View>
+          <Text className="mt-5">Repetir nueva contraseña</Text>
+          <View className="w-11/12 px-1 mt-1 border-b border-blue-500 flex flex-row">
+            <TextInput
+              onChangeText={(e) =>
+                onChange(TypeProperties.repeatNewPassword, e)
+              }
+              value={modalNewPassword.data?.repeatNewPassword.text}
+              className="w-11/12 px-1 mt-1 text-lg"
+              autoCorrect={false}
+              secureTextEntry={modalNewPassword.data.repeatNewPassword.hidden}
+            />
+            {modalNewPassword.data?.repeatNewPassword.hidden ? (
+              <EyeIcon
+                className="w-1/12"
+                size={25}
+                color="#000000"
+                onPress={(e) =>
+                  setHiddenPassword(TypeProperties.repeatNewPassword)
+                }
+              />
+            ) : (
+              <EyeSlashIcon
+                className="w-1/12"
+                size={25}
+                color="#000000"
+                onPress={(e) =>
+                  setHiddenPassword(TypeProperties.repeatNewPassword)
+                }
+              />
+            )}
+          </View>
+          <TouchableOpacity
+            disabled={disabledButtonSave}
+            className={`bg-green-400 mt-5 rounded-2xl p-2 w-1/2 mx-auto ${
+              disabledButtonSave && "bg-green-200"
+            }`}
+            onPress={resetPassword}
+          >
+            <Text className="text-center text-white">Cambiar contraseña</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
+
+      {/*------- Modal recover password -------*/}
+      <Modal
+        animationType="slide"
+        visible={modalRecoverPassword?.visible}
+        onRequestClose={() =>
+          setModalRecoverPassword({ ...modalRecoverPassword, visible: false })
+        }
+      >
+        <View className="h-full flex justify-center items-center">
+          <Toast />
+          <View>
+            <Text>Ingresá tu email</Text>
+            <View className="w-11/12 px-1 mt-1 border-b border-blue-500 flex flex-row">
+              <TextInput
+                // onChangeText={(e) => onChange(TypeProperties.oldPassword, e)}
+                value={modalRecoverPassword.data.email}
+                autoCorrect={false}
+                className="w-full px-1 mt-1 text-lg"
+              />
+            </View>
+            <TouchableOpacity
+              disabled={modalRecoverPassword.data.email.length < 4}
+              className={`bg-green-400 mt-5 rounded-2xl p-2 w-1/2 mx-auto ${
+                modalRecoverPassword.data.email.length < 4 && "bg-green-200"
+              }`}
+              onPress={resetPassword}
+            >
+              <Text className="text-center text-white">Siguiente</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View>
+            <Text className="mt-5">Ingresá el código de recuperación</Text>
+            <View className="flex flex-row justify-evenly">
+              <TextInput
+                ref={firstInputCode}
+                onChangeText={(e) => {
+                  onChangeInputCode(1, e, secondInputCode)
+                }}
+                value={modalRecoverPassword.data.code.otp[1]}
+                maxLength={1}
+                autoCorrect={false}
+                className={`px-2 py-1 mt-1 text-lg border text-center rounded-md ${
+                  firstInputCode?.current?.isFocused() && "border-yellow-500"
+                }`}
+                onFocus={() => {
+                  firstInputCode?.current?.focus()
+                  // setInputCodeFocused(firstInputCode)
+                  console.log("Focus 1")
+                }}
+              />
+              <TextInput
+                ref={secondInputCode}
+                onChangeText={(e) => {
+                  onChangeInputCode(2, e, thirdInputCode, firstInputCode)
+                }}
+                value={modalRecoverPassword.data.code.otp[2]}
+                maxLength={1}
+                autoCorrect={false}
+                className={`px-2 py-1 mt-1 text-lg border text-center rounded-md ${
+                  secondInputCode?.current?.isFocused() && "border-yellow-500"
+                }`}
+                onFocus={() => {
+                  secondInputCode?.current?.focus()
+                  console.log("Focus 2")
+                }}
+              />
+              <TextInput
+                ref={thirdInputCode}
+                onChangeText={(e) => {
+                  onChangeInputCode(3, e, fourthInputCode, secondInputCode)
+                }}
+                value={modalRecoverPassword.data.code.otp[3]}
+                maxLength={1}
+                autoCorrect={false}
+                className={`px-2 py-1 mt-1 text-lg border text-center rounded-md ${
+                  thirdInputCode?.current?.isFocused() && "border-yellow-500"
+                }`}
+                onFocus={() => {
+                  thirdInputCode?.current?.focus()
+                  console.log("Focus 3")
+                }}
+              />
+              <TextInput
+                ref={fourthInputCode}
+                onChangeText={(e) => {
+                  onChangeInputCode(4, e, undefined, thirdInputCode)
+                }}
+                value={modalRecoverPassword.data.code.otp[4]}
+                maxLength={1}
+                autoCorrect={false}
+                className={`px-2 py-1 mt-1 text-lg border text-center rounded-md ${
+                  fourthInputCode?.current?.isFocused() && "border-yellow-500"
+                }`}
+                onFocus={() => {
+                  fourthInputCode?.current?.focus()
+                  console.log("Focus 4")
+                }}
+              />
+            </View>
+          </View>
+
           <Text className="mt-5">Ingresá tu nueva contraseña</Text>
           <View className="w-11/12 px-1 mt-1 border-b border-blue-500 flex flex-row">
             <TextInput
@@ -219,7 +452,10 @@ const Settings = ({
             )}
           </View>
           <TouchableOpacity
-            className="bg-green-400 mt-5 rounded-2xl p-2 w-1/2 mx-auto"
+            disabled={disabledButtonSave}
+            className={`bg-green-400 mt-5 rounded-2xl p-2 w-1/2 mx-auto ${
+              disabledButtonSave && "bg-green-200"
+            }`}
             onPress={resetPassword}
           >
             <Text className="text-center text-white">Cambiar contraseña</Text>

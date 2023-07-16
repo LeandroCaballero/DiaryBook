@@ -28,7 +28,7 @@ interface Props {
 const ModalEditMembers = ({ group, show, closeModal, navigation }: Props) => {
   const actionMember = async (
     message: string,
-    userId: number,
+    userId: string,
     action: string
   ) => {
     Alert.alert("Cuidado", message, [
