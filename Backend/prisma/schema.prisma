@@ -8,21 +8,22 @@ datasource db {
 }
 
 model User {
-  id             String         @id @default(uuid())
-  createdAt      DateTime       @default(now()) @db.Timestamp(6)
-  updatedAt      DateTime       @updatedAt
-  name           String
-  email          String
-  password       String
-  confirmEmail   Boolean        @default(false)
-  tokenEmail     String
-  profileImage   String?
-  Purchases      Purchase[]
-  Groups         Group[]        @relation("Users")
-  Admins         Group[]        @relation("Admins")
-  Requests       Group[]        @relation("RequestsUsers")
-  PurchaseItem   PurchaseItem[]
-  purchaseItemId Int?
+  id                  String         @id @default(uuid())
+  createdAt           DateTime       @default(now()) @db.Timestamp(6)
+  updatedAt           DateTime       @updatedAt
+  name                String
+  email               String         @unique
+  password            String
+  confirmEmail        Boolean        @default(false)
+  tokenEmail          String
+  codeRecoverPassword String?
+  profileImage        String?
+  Purchases           Purchase[]
+  Groups              Group[]        @relation("Users")
+  Admins              Group[]        @relation("Admins")
+  Requests            Group[]        @relation("RequestsUsers")
+  PurchaseItem        PurchaseItem[]
+  purchaseItemId      Int?
 }
 
 model Group {

@@ -7,7 +7,7 @@ import { Request, Response } from "express"
 
 export const register = async (req: Request, res: Response) => {
   const { name, email, password } = req.body
-  console.log("Entra en register", req.body)
+  // console.log("Entra en register", req.body)
 
   const oldUser = await prisma.user.findFirst({ where: { email } })
 
@@ -48,8 +48,8 @@ export const register = async (req: Request, res: Response) => {
     sgMail
       .send(msg)
       .then((response) => {
-        console.log(response[0].statusCode)
-        console.log(response[0].headers)
+        // console.log(response[0].statusCode)
+        // console.log(response[0].headers)
 
         res.status(200).json({
           message: "Se ha enviado un email de confirmación para su cuenta",
@@ -66,7 +66,6 @@ export const register = async (req: Request, res: Response) => {
 
 export const login = async (req: Request, res: Response) => {
   const { emailOrName, password } = req.body
-  console.log(emailOrName, password)
 
   const existUser = await prisma.user.findFirst({
     where: {
@@ -188,5 +187,123 @@ export const changePassword = async (req: Request, res: Response) => {
         .status(403)
         .json({ message: "La contraseña actual es incorrecta!" })
     }
+  }
+}
+
+export const sendCodeRecoverPassword = async (req: Request, res: Response) => {
+  const { userEmail } = req.body
+
+  const newCodeRecover: number[] = []
+
+  for (let i = 0; i < 4; i++) {
+    const randomNumber = Math.floor(Math.random() * 10)
+    newCodeRecover.push(randomNumber)
+  }
+
+  const setUserCode = await prisma.user.update({
+    where: {
+      email: userEmail,
+    },
+    data: {
+      codeRecoverPassword: newCodeRecover.join(""),
+    },
+  })
+
+  if (setUserCode) {
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY || "")
+
+    const msg = {
+      to: userEmail,
+      from: "diarybook.arg@gmail.com",
+      templateId: "d-470f832126af4f4c910eb878f3e0b516",
+      dynamicTemplateData: {
+        name: setUserCode.name,
+        code: setUserCode.codeRecoverPassword,
+      },
+    }
+
+    sgMail
+      .send(msg)
+      .then(() => {
+        setTimeout(async () => {
+          const deleteCode = await prisma.user.update({
+            where: {
+              email: userEmail,
+            },
+            data: {
+              codeRecoverPassword: null,
+            },
+          })
+        }, 60000)
+
+        return res.status(200).json({
+          message: "Se ha enviado un email con el código de recuperación",
+        })
+      })
+      .catch((error) => {
+        console.error("ERROR de mail!!", error)
+        return res
+          .status(500)
+          .json({ message: "Hubo un error, por favor intente más tarde" })
+      })
+  }
+}
+
+export const send = async (req: Request, res: Response) => {
+  const { userEmail } = req.body
+
+  const newCodeRecover: number[] = []
+
+  for (let i = 0; i < 4; i++) {
+    const randomNumber = Math.floor(Math.random() * 10)
+    newCodeRecover.push(randomNumber)
+  }
+
+  const setUserCode = await prisma.user.update({
+    where: {
+      email: userEmail,
+    },
+    data: {
+      codeRecoverPassword: newCodeRecover.join(""),
+    },
+  })
+
+  if (setUserCode) {
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY || "")
+
+    const msg = {
+      to: userEmail,
+      from: "diarybook.arg@gmail.com",
+      templateId: "d-470f832126af4f4c910eb878f3e0b516",
+      dynamicTemplateData: {
+        name: setUserCode.name,
+        code: setUserCode.codeRecoverPassword,
+      },
+    }
+
+    sgMail
+      .send(msg)
+      .then(() => {
+        setTimeout(async () => {
+          const deleteCode = await prisma.user.update({
+            where: {
+              email: userEmail,
+            },
+            data: {
+              codeRecoverPassword: null,
+            },
+          })
+        }, 60000)
+
+        return res.status(200).json({
+          message: "Se ha enviado un email con el código de recuperación",
+        })
+      })
+      .catch((error) => {
+        console.error("ERROR de mail!!", error)
+        return res
+          .status(500)
+          .json({ message: "Hubo un error, por favor intente más tarde" })
+      })
   }
 }

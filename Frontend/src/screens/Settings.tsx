@@ -74,8 +74,8 @@ const Settings = ({
   const onChangeInputCode = (
     property: number,
     code: string,
-    nextRef?: React.RefObject<TextInput>,
-    prevRef?: React.RefObject<TextInput>
+    nextInput?: React.RefObject<TextInput>,
+    prevInput?: React.RefObject<TextInput>
   ) => {
     setModalRecoverPassword({
       ...modalRecoverPassword,
@@ -88,12 +88,17 @@ const Settings = ({
       },
     })
 
-    if (nextRef) {
-      nextRef.current?.focus()
+    if (code.length == 0 && prevInput) {
+      prevInput.current?.focus()
       return
     }
 
-    prevRef && prevRef.current?.focus()
+    if (code.length != 0 && nextInput) {
+      nextInput.current?.focus()
+      return
+    }
+
+    // prevRef && prevRef.current?.focus()
   }
 
   const setHiddenPassword = (property: TypeProperties) => {
@@ -163,6 +168,39 @@ const Settings = ({
       console.log(error)
       // setError(JSON.parse(error?.message)[0]?.message)
       // setLoading(false)
+    }
+  }
+
+  const requestCodeRecPwd = async () => {
+    try {
+      const response = await fetch(`${API_URL}/requestCodeRecPwd`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userEmail: modalRecoverPassword.data.email,
+        }),
+      })
+
+      const { message } = await response.json()
+
+      if (response.ok) {
+        Toast.show({
+          type: "success",
+          text1: "Excelente!",
+          text2: message,
+          visibilityTime: 5000,
+        })
+      } else {
+        Toast.show({
+          type: "error",
+          text1: "Hubo un error",
+          text2: message,
+        })
+      }
+    } catch (error) {
+      console.log(error)
     }
   }
 
@@ -307,10 +345,16 @@ const Settings = ({
             <Text>Ingresá tu email</Text>
             <View className="w-11/12 px-1 mt-1 border-b border-blue-500 flex flex-row">
               <TextInput
-                // onChangeText={(e) => onChange(TypeProperties.oldPassword, e)}
+                onChangeText={(e) =>
+                  setModalRecoverPassword({
+                    ...modalRecoverPassword,
+                    data: { ...modalRecoverPassword.data, email: e },
+                  })
+                }
                 value={modalRecoverPassword.data.email}
                 autoCorrect={false}
                 className="w-full px-1 mt-1 text-lg"
+                keyboardType="email-address"
               />
             </View>
             <TouchableOpacity
@@ -318,7 +362,7 @@ const Settings = ({
               className={`bg-green-400 mt-5 rounded-2xl p-2 w-1/2 mx-auto ${
                 modalRecoverPassword.data.email.length < 4 && "bg-green-200"
               }`}
-              onPress={resetPassword}
+              onPress={requestCodeRecPwd}
             >
               <Text className="text-center text-white">Siguiente</Text>
             </TouchableOpacity>
@@ -335,13 +379,13 @@ const Settings = ({
                 value={modalRecoverPassword.data.code.otp[1]}
                 maxLength={1}
                 autoCorrect={false}
+                keyboardType="numeric"
                 className={`px-2 py-1 mt-1 text-lg border text-center rounded-md ${
                   firstInputCode?.current?.isFocused() && "border-yellow-500"
                 }`}
                 onFocus={() => {
                   firstInputCode?.current?.focus()
                   // setInputCodeFocused(firstInputCode)
-                  console.log("Focus 1")
                 }}
               />
               <TextInput
@@ -352,13 +396,14 @@ const Settings = ({
                 value={modalRecoverPassword.data.code.otp[2]}
                 maxLength={1}
                 autoCorrect={false}
+                keyboardType="numeric"
                 className={`px-2 py-1 mt-1 text-lg border text-center rounded-md ${
                   secondInputCode?.current?.isFocused() && "border-yellow-500"
                 }`}
                 onFocus={() => {
                   secondInputCode?.current?.focus()
-                  console.log("Focus 2")
                 }}
+                focusable={false}
               />
               <TextInput
                 ref={thirdInputCode}
@@ -368,12 +413,12 @@ const Settings = ({
                 value={modalRecoverPassword.data.code.otp[3]}
                 maxLength={1}
                 autoCorrect={false}
+                keyboardType="numeric"
                 className={`px-2 py-1 mt-1 text-lg border text-center rounded-md ${
                   thirdInputCode?.current?.isFocused() && "border-yellow-500"
                 }`}
                 onFocus={() => {
                   thirdInputCode?.current?.focus()
-                  console.log("Focus 3")
                 }}
               />
               <TextInput
@@ -384,12 +429,12 @@ const Settings = ({
                 value={modalRecoverPassword.data.code.otp[4]}
                 maxLength={1}
                 autoCorrect={false}
+                keyboardType="numeric"
                 className={`px-2 py-1 mt-1 text-lg border text-center rounded-md ${
                   fourthInputCode?.current?.isFocused() && "border-yellow-500"
                 }`}
                 onFocus={() => {
                   fourthInputCode?.current?.focus()
-                  console.log("Focus 4")
                 }}
               />
             </View>

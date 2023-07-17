@@ -5,6 +5,7 @@ import {
   getStatus,
   confirmEmail,
   changePassword,
+  sendCodeRecoverPassword,
 } from "../controllers/auth.controller"
 import * as groupController from "../controllers/group.controller"
 import { getProducts } from "../controllers/product.controller"
@@ -39,6 +40,7 @@ router.post("/login", login)
 router.get("/status", [limiter, verifyToken], getStatus)
 router.get("/confirmEmail/:id/:token", confirmEmail)
 router.post("/resetPassword", changePassword)
+router.post("/requestCodeRecPwd", sendCodeRecoverPassword)
 
 router.get(["/", "/test/:name"], (req, res) => {
   let greeting = "<h1>Hello From Node with Express!</h1>"
