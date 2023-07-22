@@ -36,11 +36,13 @@ import {
   User,
 } from "../interfaces/prisma.interfaces"
 import { NewPurchaseItem } from "../interfaces/createPurchases.interfaces"
+import ModalPurchaseItem from "../components/Purchase/ModalPurchaseItem"
 import { API_URL } from "../../config"
 import Toast from "react-native-toast-message"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import { AuthStackParamList } from "../types"
 import AsyncStorage from "@react-native-async-storage/async-storage"
+import { OperationsPurchaseItem } from "../enums"
 
 let dataTest = [
   {
@@ -89,25 +91,18 @@ const CreatePurchase = ({
   const [showCamera, setShowCamera] = useState(false)
   const [showPreviewModal, setShowPreviewModal] = useState(false)
 
-  // User shared
-  const [sharedUsers, setSharedUsers] = useState<
-    Array<{ user: User; checked: boolean }>
-  >([])
-
-  const [modalEditNewItem, setModalEditNewItem] = useState<{
-    index: number
-    state: boolean
+  const [modalPurchaseItem, setModalPurchaseItem] = useState<{
+    visible: boolean
+    data: NewPurchaseItem
+    indexPurchaseItem?: number
   }>({
-    index: 0,
-    state: false,
-  })
-
-  const [showNewPurchaseItem, setShowNewPurchaseItem] = useState(false)
-  const [newPurchaseItem, setNewPurchaseItem] = useState<NewPurchaseItem>({
-    name: "",
-    quantity: "0",
-    forUsers: [],
-    price: "0",
+    visible: false,
+    data: {
+      forUsers: [],
+      name: "",
+      price: "",
+      quantity: "",
+    },
   })
 
   const [data, setData] = useState<{
@@ -116,108 +111,18 @@ const CreatePurchase = ({
     purchaseItems: NewPurchaseItem[]
     purchases?: Purchase[]
     name: string
-    dateBuy: string
+    dateBuy: Date
     groups?: Group[]
   }>({
     purchaseItems: [],
     name: "",
-    dateBuy: "",
+    dateBuy: new Date(),
   })
 
-  useEffect(() => {
-    // fetchData()
-
-    let usersData = group.Admins.concat(group.Users).map((user) => ({
-      user,
-      checked: false,
-    }))
-    setSharedUsers(usersData)
-  }, [])
-
-  const fetchData = async () => {
-    // setLoading(true)
-    try {
-      const [groups, purchases] = await Promise.all([
-        await fetch(`${API_URL}/groups`),
-        await fetch(`${API_URL}/purchases`),
-      ])
-
-      const groupsJSON: Group[] = await groups.json()
-      const purchasesJSON: Purchase[] = await purchases.json()
-
-      setData({ ...data, groups: groupsJSON, purchases: purchasesJSON })
-    } catch (error) {
-      console.log(error)
-    } finally {
-      // setLoading(false)
-    }
-  }
-
   const onChangeDate = (e: DateTimePickerEvent) => {
-    setDate(new Date(e.nativeEvent.timestamp || ""))
     setShowCalendar(false)
-  }
-
-  const showDatepicker = () => {
-    setShowCalendar(true)
-  }
-  const [isEnabled, setIsEnabled] = useState(false)
-  const toggleSwitch = () => setIsEnabled((previousState) => !previousState)
-
-  const toggleSwitchUserShared = (checked: boolean, indexUser: number) => {
-    // setSharedUsers((prevUsers) => {
-    //   const newArray = [...prevUsers]
-    //   newArray[i] = { ...newArray[i], checked }
-    //   return newArray
-    // })
-
-    setData((prevData) => {
-      const prevPurchaseItemToEdit = prevData.purchaseItems
-
-      prevPurchaseItemToEdit[modalEditNewItem.index].forUsers[indexUser] = {
-        user: prevPurchaseItemToEdit[modalEditNewItem.index].forUsers[indexUser]
-          .user,
-        checked,
-      }
-
-      console.log("INDEX", modalEditNewItem.index, indexUser)
-      console.log(prevPurchaseItemToEdit[modalEditNewItem.index].forUsers)
-
-      return { ...prevData, purchaseItems: prevPurchaseItemToEdit }
-    })
-  }
-
-  const changeNewItemInfo = (text: string, property: string) => {
-    setData((prevData) => {
-      const newArray = [...prevData.purchaseItems]
-      newArray[modalEditNewItem.index] = {
-        ...newArray[modalEditNewItem.index],
-        [property]: text,
-      }
-      return { ...prevData, purchaseItems: newArray }
-    })
-  }
-
-  const savePurchaseItem = () => {
-    setData({
-      ...data,
-      purchaseItems: [...data.purchaseItems, newPurchaseItem],
-    })
-    clearNewPurchaseItem()
-  }
-
-  const cancelPurchaseItem = () => {
-    setShowNewPurchaseItem(false)
-    clearNewPurchaseItem()
-  }
-
-  const clearNewPurchaseItem = () => {
-    setNewPurchaseItem({
-      name: "",
-      quantity: "0",
-      forUsers: [],
-      price: "0",
-    })
+    if (e.nativeEvent.timestamp)
+      setData({ ...data, dateBuy: new Date(e.nativeEvent.timestamp) })
   }
 
   const deletePurchaceItem = (index: number) => {
@@ -226,14 +131,6 @@ const CreatePurchase = ({
       ...data,
       purchaseItems: data.purchaseItems.splice(index, 1),
     })
-  }
-
-  const editPurchaceItem = (item: NewPurchaseItem) => {
-    console.log(item)
-    // setData({
-    //   ...data,
-    //   purchaseItems: data.purchaseItems.splice(index, 1),
-    // })
   }
 
   const takePicture = async () => {
@@ -249,12 +146,6 @@ const CreatePurchase = ({
             text2: "Cámara denegada!",
           })
     }
-  }
-
-  const toggleCameraType = () => {
-    setType((current) =>
-      current === CameraType.back ? CameraType.front : CameraType.back
-    )
   }
 
   const takePhoto = async () => {
@@ -293,7 +184,7 @@ const CreatePurchase = ({
           name: el.description,
           price: el.unit_price,
           quantity: el.quantity,
-          forUsers: sharedUsers,
+          forUsers: [],
         }
       })
 
@@ -314,6 +205,40 @@ const CreatePurchase = ({
     }
   }
 
+  const closeModalPurchaseItem = (
+    operation: OperationsPurchaseItem,
+    purchaseItem?: NewPurchaseItem,
+    indexPurchaseItem?: number
+  ) => {
+    if (operation == OperationsPurchaseItem.save && purchaseItem) {
+      const { purchaseItems } = data
+      console.log("info", operation, indexPurchaseItem)
+      // If is create
+      // Algo interesante, 0 es falso en JS por eso cuando editaba el primer elemento con indice 0, !indexPurchaseItem es igual a true
+      if (!indexPurchaseItem && indexPurchaseItem != 0) {
+        console.log("entra en CREATE")
+        setData({ ...data, purchaseItems: [...purchaseItems, purchaseItem] })
+      } else {
+        // Edit
+        console.log("entra en EDIT")
+        setData((prevData) => {
+          prevData.purchaseItems[indexPurchaseItem] = purchaseItem
+          return { ...prevData }
+        })
+      }
+    }
+
+    setModalPurchaseItem({
+      visible: false,
+      data: {
+        forUsers: [],
+        name: "",
+        price: "",
+        quantity: "",
+      },
+    })
+  }
+
   return (
     <ScrollView className="p-3 bg-white h-full">
       <SafeAreaView>
@@ -325,7 +250,7 @@ const CreatePurchase = ({
           className=" p-1 mt-1 rounded-lg bg-gray-50"
         />
         <Text className="">
-          Fecha de la compra: {dayjs(date).format("DD [de] MMMM")}
+          Fecha de la compra: {dayjs(data.dateBuy).format("DD [de] MMMM")}
         </Text>
         <Pressable
           className="border bg-white rounded-lg p-2 my-1 w-1/2"
@@ -351,7 +276,13 @@ const CreatePurchase = ({
             <View className="w-1/3 flex flex-row">
               <Pressable
                 className="ml-auto mr-2 bg-white  rounded-full p-3 my-1 w-12 flex flex-row items-center justify-center"
-                onPress={() => setModalEditNewItem({ index, state: true })}
+                onPress={() =>
+                  setModalPurchaseItem({
+                    visible: true,
+                    data: item,
+                    indexPurchaseItem: index,
+                  })
+                }
               >
                 <PencilIcon size={20} color="#000000" />
               </Pressable>
@@ -368,72 +299,19 @@ const CreatePurchase = ({
         {showCalendar && (
           <DateTimePicker
             testID="dateTimePicker"
-            value={date}
+            value={data.dateBuy}
             mode="date"
             onChange={(e) => onChangeDate(e)}
           />
         )}
-
-        {showNewPurchaseItem ? (
-          <View className="space-y-3">
-            <View>
-              <Text className="">Precio</Text>
-              <TextInput
-                onChangeText={(e) =>
-                  setNewPurchaseItem({ ...newPurchaseItem, price: e })
-                }
-                value={newPurchaseItem.price}
-                className="rounded-lg bg-gray-50 p-1 mt-1"
-                keyboardType="numeric"
-              />
-            </View>
-            <View>
-              <Text className="">Cantidad</Text>
-              <TextInput
-                onChangeText={(e) =>
-                  setNewPurchaseItem({ ...newPurchaseItem, quantity: e })
-                }
-                value={newPurchaseItem.quantity}
-                className="rounded-lg bg-gray-50 p-1 mt-1"
-                keyboardType="numeric"
-              />
-            </View>
-            <View className="flex flex-col items-start">
-              <Text className="">Es compartido</Text>
-
-              <Switch
-                trackColor={{ false: "#767577", true: "#81b0ff" }}
-                thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
-                ios_backgroundColor="#3e3e3e"
-                onValueChange={toggleSwitch}
-                value={isEnabled}
-              />
-            </View>
-
-            <View className="flex flex-row">
-              <Pressable
-                className="border bg-white rounded-full p-3 my-1 w-12 flex flex-row items-center justify-center"
-                onPress={savePurchaseItem}
-              >
-                <CheckIcon size={20} color="#000000" />
-              </Pressable>
-
-              <Pressable
-                className="border bg-white rounded-full p-3 my-1 w-12 flex flex-row items-center justify-center"
-                onPress={cancelPurchaseItem}
-              >
-                <XMarkIcon size={20} color="#000000" />
-              </Pressable>
-            </View>
-          </View>
-        ) : (
-          <Pressable
-            className="border border-black"
-            onPress={() => setShowNewPurchaseItem(true)}
-          >
-            <Text className=" p-2">Agregar</Text>
-          </Pressable>
-        )}
+        <Pressable
+          className="border border-black"
+          onPress={() =>
+            setModalPurchaseItem({ ...modalPurchaseItem, visible: true })
+          }
+        >
+          <Text className=" p-2">Agregar</Text>
+        </Pressable>
 
         <View className="h-full">
           <Pressable
@@ -526,77 +404,14 @@ const CreatePurchase = ({
         </Modal>
 
         {/* Edit item modal */}
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalEditNewItem.state}
-          onRequestClose={() => setModalEditNewItem({ state: false, index: 0 })}
-        >
-          <View
-            className="flex flex-row items-center justify-center h-screen p-1"
-            style={styles.modalEditNewItem}
-          >
-            <View className="bg-white rounded-lg p-2 w-11/12">
-              <Text className="text-lg text-center">Editar Item</Text>
-              <Text>Nombre</Text>
-              <TextInput
-                onChangeText={(e) => changeNewItemInfo(e, "name")}
-                value={data.purchaseItems[modalEditNewItem.index]?.name}
-                placeholder="Ingrese un nombre..."
-                className="p-1 mt-1 rounded-lg bg-gray-50"
-              />
-              <Text>Precio</Text>
-              <TextInput
-                onChangeText={(e) => changeNewItemInfo(e, "price")}
-                value={data.purchaseItems[
-                  modalEditNewItem.index
-                ]?.price.toString()}
-                className="p-1 mt-1 rounded-lg bg-gray-50"
-                keyboardType="numeric"
-              />
-              <Text>Cantidad</Text>
-              <TextInput
-                onChangeText={(e) => changeNewItemInfo(e, "quantity")}
-                value={data.purchaseItems[
-                  modalEditNewItem.index
-                ]?.quantity.toString()}
-                className="p-1 mt-1 rounded-lg bg-gray-50"
-                keyboardType="numeric"
-              />
-
-              {data.purchaseItems[modalEditNewItem.index]?.forUsers && (
-                <View className="mt-1.5">
-                  <Text>Para quien es?</Text>
-                  <View className="flex gap-y-1.5 mt-1">
-                    {data.purchaseItems[modalEditNewItem.index]?.forUsers.map(
-                      (el, i) => (
-                        <View
-                          key={i}
-                          className="flex flex-row justify-between items-center border"
-                        >
-                          <Text className="pl-3">
-                            {el.user.name == userInfo?.name
-                              ? "Para mi"
-                              : el.user.name}
-                          </Text>
-                          <Switch
-                            trackColor={{ false: "#767577", true: "#81b0ff" }}
-                            thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
-                            ios_backgroundColor="#3e3e3e"
-                            onValueChange={(checked) =>
-                              toggleSwitchUserShared(checked, i)
-                            }
-                            value={el.checked}
-                          />
-                        </View>
-                      )
-                    )}
-                  </View>
-                </View>
-              )}
-            </View>
-          </View>
-        </Modal>
+        <ModalPurchaseItem
+          closeModal={closeModalPurchaseItem}
+          modalInfo={modalPurchaseItem}
+          sharedUsers={group.Admins.concat(group.Users).map((user) => ({
+            user,
+            checked: false,
+          }))}
+        />
       </SafeAreaView>
     </ScrollView>
   )
@@ -608,12 +423,6 @@ const styles = StyleSheet.create({
     shadowColor: "#000", // Añade sombra en iOS
     shadowOpacity: 0.3,
     shadowRadius: 2,
-  },
-  modalEditNewItem: {
-    flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)", // Color de fondo transparente con opacidad
-    justifyContent: "center",
-    alignItems: "center",
   },
 })
 

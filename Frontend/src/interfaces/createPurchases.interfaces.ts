@@ -7,4 +7,9 @@ interface NewPurchaseItem {
   price: string
 }
 
-export { NewPurchaseItem }
+interface SharedUsers {
+  user: User
+  checked: boolean
+}
+
+export { NewPurchaseItem, SharedUsers }
