@@ -36,7 +36,6 @@ const ModalPurchaseItem = ({ modalInfo, closeModal, sharedUsers }: Props) => {
     forUsers: [],
     price: "",
   })
-  const [sharedUsersOrigin, setSharedUsersOrigin] = useState<SharedUsers[]>([])
 
   useEffect(() => {
     if (modalInfo.data) {
@@ -49,8 +48,6 @@ const ModalPurchaseItem = ({ modalInfo, closeModal, sharedUsers }: Props) => {
       setFormData(modalInfo.data)
     }
   }, [modalInfo])
-
-  useEffect(() => setSharedUsersOrigin(sharedUsers), [sharedUsers])
 
   //   Changes Controllers
   const changeNewItemInfo = (text: string, property: string) => {

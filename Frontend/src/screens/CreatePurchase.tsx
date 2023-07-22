@@ -126,10 +126,10 @@ const CreatePurchase = ({
   }
 
   const deletePurchaceItem = (index: number) => {
-    console.log(index)
-    setData({
-      ...data,
-      purchaseItems: data.purchaseItems.splice(index, 1),
+    setData((prevData) => {
+      prevData.purchaseItems.splice(index, 1)
+
+      return { ...prevData }
     })
   }
 
@@ -212,15 +212,12 @@ const CreatePurchase = ({
   ) => {
     if (operation == OperationsPurchaseItem.save && purchaseItem) {
       const { purchaseItems } = data
-      console.log("info", operation, indexPurchaseItem)
       // If is create
       // Algo interesante, 0 es falso en JS por eso cuando editaba el primer elemento con indice 0, !indexPurchaseItem es igual a true
       if (!indexPurchaseItem && indexPurchaseItem != 0) {
-        console.log("entra en CREATE")
         setData({ ...data, purchaseItems: [...purchaseItems, purchaseItem] })
       } else {
         // Edit
-        console.log("entra en EDIT")
         setData((prevData) => {
           prevData.purchaseItems[indexPurchaseItem] = purchaseItem
           return { ...prevData }
