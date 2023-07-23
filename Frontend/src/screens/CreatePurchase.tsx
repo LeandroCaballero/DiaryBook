@@ -99,21 +99,21 @@ const CreatePurchase = ({
     visible: false,
     data: {
       forUsers: [],
-      name: "",
+      productName: "",
       price: "",
       quantity: "",
     },
   })
 
   const [data, setData] = useState<{
-    groupId?: number
-    buyerId?: number
+    groupId: string
+    buyerId: string
     purchaseItems: NewPurchaseItem[]
-    purchases?: Purchase[]
     name: string
     dateBuy: Date
-    groups?: Group[]
   }>({
+    groupId: group.id.toString(),
+    buyerId: userInfo?.id || "",
     purchaseItems: [],
     name: "",
     dateBuy: new Date(),
@@ -181,7 +181,7 @@ const CreatePurchase = ({
       const newInfo = dataTest.map((el: any, index) => {
         return {
           id: index,
-          name: el.description,
+          productName: el.description,
           price: el.unit_price,
           quantity: el.quantity,
           forUsers: [],
@@ -229,11 +229,51 @@ const CreatePurchase = ({
       visible: false,
       data: {
         forUsers: [],
-        name: "",
+        productName: "",
         price: "",
         quantity: "",
       },
     })
+  }
+
+  const createPurchase = async () => {
+    const clearForUsers = data.purchaseItems.map((item) => {
+      return {
+        ...item,
+        forUsers: item.forUsers
+          .filter((user) => user.checked)
+          .map((user) => user.user),
+      }
+    })
+    try {
+      const response = await fetch(`${API_URL}/purchase`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ ...data, purchaseItems: clearForUsers }),
+      })
+
+      const { message } = await response.json()
+
+      if (response?.ok) {
+        Toast.show({
+          type: "success",
+          text1: "Excelente!",
+          text2: message,
+        })
+      } else {
+        Toast.show({
+          type: "error",
+          text1: "Hubo un error",
+          text2: message,
+        })
+      }
+    } catch (error: any) {
+      console.log(error)
+      // setError(JSON.parse(error?.message)[0]?.message)
+      // setLoading(false)
+    }
   }
 
   return (
@@ -263,7 +303,7 @@ const CreatePurchase = ({
             className="border  rounded-lg flex flex-row items-center mb-2 p-2"
           >
             <View className="w-2/3">
-              <Text className="">Nombre: {item.name}</Text>
+              <Text className="">Nombre: {item.productName}</Text>
               <Text className="">Precio: {item.price}</Text>
               <Text className="">Cantidad: {item.quantity}</Text>
               <Text className="">
@@ -320,7 +360,7 @@ const CreatePurchase = ({
           </Pressable>
           <Pressable
             className="border bg-white rounded-lg p-2 my-1 w-1/2"
-            onPress={sendPhoto}
+            onPress={createPurchase}
           >
             <Text className="text-center">Guardar</Text>
           </Pressable>

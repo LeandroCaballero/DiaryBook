@@ -67,9 +67,11 @@ const Group = ({ route, navigation }: Props) => {
         ))}
 
         <Text className="text-lg mt-3">Solicitudes</Text>
-        {group.RequestUsers.map((el) => (
-          <Text key={el.id}>{el.name}</Text>
-        ))}
+        {group.RequestUsers.length > 0 ? (
+          group.RequestUsers.map((el) => <Text key={el.id}>{el.name}</Text>)
+        ) : (
+          <Text>Sin resultados</Text>
+        )}
         <View className="flex flex-row justify-between">
           <Text className="text-lg">Compras</Text>
           <Pressable
@@ -85,7 +87,7 @@ const Group = ({ route, navigation }: Props) => {
             <PlusIcon size={25} color="#000000" />
           </Pressable>
         </View>
-        {group.Purchases.length != 0 ? (
+        {group.Purchases.length > 0 ? (
           group.Purchases.map((el) => (
             <View key={el.id} className="flex flex-row justify-between">
               <Text>{el.name}</Text>

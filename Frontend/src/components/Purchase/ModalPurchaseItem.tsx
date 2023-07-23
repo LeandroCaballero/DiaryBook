@@ -31,7 +31,7 @@ interface Props {
 
 const ModalPurchaseItem = ({ modalInfo, closeModal, sharedUsers }: Props) => {
   const [formData, setFormData] = useState<NewPurchaseItem>({
-    name: "",
+    productName: "",
     quantity: "",
     forUsers: [],
     price: "",
@@ -65,7 +65,7 @@ const ModalPurchaseItem = ({ modalInfo, closeModal, sharedUsers }: Props) => {
   const sendCloseModal = (operation: OperationsPurchaseItem) => {
     // Clean modal form
     setFormData({
-      name: "",
+      productName: "",
       quantity: "",
       forUsers: [],
       price: "",
@@ -92,8 +92,8 @@ const ModalPurchaseItem = ({ modalInfo, closeModal, sharedUsers }: Props) => {
           <Text className="text-lg text-center">Editar Item</Text>
           <Text>Nombre</Text>
           <TextInput
-            onChangeText={(e) => changeNewItemInfo(e, "name")}
-            value={formData.name}
+            onChangeText={(e) => changeNewItemInfo(e, "productName")}
+            value={formData.productName}
             placeholder="Ingrese un nombre..."
             className="p-1 mt-1 rounded-lg bg-gray-50"
           />

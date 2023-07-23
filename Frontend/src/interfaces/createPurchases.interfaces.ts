@@ -1,7 +1,7 @@
 import { User } from "./prisma.interfaces"
 
 interface NewPurchaseItem {
-  name: string
+  productName: string
   quantity: string
   forUsers: Array<{ user: User; checked?: boolean }>
   price: string
