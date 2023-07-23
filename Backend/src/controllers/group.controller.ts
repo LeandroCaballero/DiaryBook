@@ -23,7 +23,14 @@ export const getGroups = async (req: Request, res: Response) => {
         { Admins: { some: { id: userId } } },
       ],
     },
-    include: { Users: true, Admins: true, Purchases: true, RequestUsers: true },
+    include: {
+      Users: true,
+      Admins: true,
+      Purchases: {
+        include: { PurchaseItems: { include: { forUsers: true } } },
+      },
+      RequestUsers: true,
+    },
   })
 
   res.status(200).json(groups)

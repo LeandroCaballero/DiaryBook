@@ -5,7 +5,7 @@ import { User } from "@prisma/client"
 export const getPurchases = async (req: Request, res: Response) => {
   try {
     const purchases = await prisma.purchase.findMany({
-      include: { PurchaseItems: true },
+      include: { PurchaseItems: { include: { forUsers: true } } },
     })
 
     res.status(200).json(purchases)
@@ -15,7 +15,7 @@ export const getPurchases = async (req: Request, res: Response) => {
 }
 
 export const createPurchase = async (req: Request, res: Response) => {
-  // console.log(req.body)
+  console.log(req.body)
   const { name, dateBuy, groupId, buyerId, purchaseItems } = req.body
 
   try {
@@ -41,9 +41,9 @@ export const createPurchase = async (req: Request, res: Response) => {
       include: { PurchaseItems: true },
     })
 
-    await prisma.$transaction([
-      ...newPurchase.PurchaseItems.map((purchaseItem, index) => {
-        return prisma.purchaseItem.update({
+    const updatePurchaseItems = newPurchase.PurchaseItems.map(
+      async (purchaseItem, index) => {
+        await prisma.purchaseItem.update({
           where: { id: purchaseItem.id },
           data: {
             forUsers: {
@@ -55,8 +55,69 @@ export const createPurchase = async (req: Request, res: Response) => {
             },
           },
         })
-      }),
-    ])
+      }
+    )
+
+    // await prisma.$transaction(
+    //   async (tx) => {
+    //     // 1. Create pruchase with items
+    //     const newPurchase = await tx.purchase.create({
+    //       data: {
+    //         name,
+    //         dateBuy,
+    //         Group: { connect: { id: groupId } },
+    //         Buyer: { connect: { id: buyerId } },
+    //         PurchaseItems: {
+    //           createMany: {
+    //             data: [
+    //               ...purchaseItems.map((purchaseItem: any) => ({
+    //                 price: +purchaseItem.price,
+    //                 quantity: +purchaseItem.quantity,
+    //                 total: +purchaseItem.price * +purchaseItem.quantity,
+    //                 productName: purchaseItem.productName,
+    //               })),
+    //             ],
+    //           },
+    //         },
+    //       },
+    //       include: { PurchaseItems: true },
+    //     })
+
+    //     // 2. Update forUsers in Items
+    //     newPurchase.PurchaseItems.map(async (purchaseItem, index) => {
+    //       await tx.purchaseItem.update({
+    //         where: { id: purchaseItem.id },
+    //         data: {
+    //           forUsers: {
+    //             connect: [
+    //               ...purchaseItems[index].forUsers.map((user: User) => ({
+    //                 id: user.id,
+    //               })),
+    //             ],
+    //           },
+    //         },
+    //       })
+    //     })
+    //   },
+    //   { maxWait: 7000, timeout: 7000 }
+    // )
+
+    // [
+    //   ...newPurchase.PurchaseItems.map((purchaseItem, index) => {
+    //     return prisma.purchaseItem.update({
+    //       where: { id: purchaseItem.id },
+    //       data: {
+    //         forUsers: {
+    //           connect: [
+    //             ...purchaseItems[index].forUsers.map((user: User) => ({
+    //               id: user.id,
+    //             })),
+    //           ],
+    //         },
+    //       },
+    //     })
+    //   }),
+    // ]
     // (async (tx) => {
     //   // 1. Decrement amount from the sender.
     //   const sender = await tx.account.update({
