@@ -22,7 +22,7 @@ model User {
   Groups              Group[]        @relation("Users")
   Admins              Group[]        @relation("Admins")
   Requests            Group[]        @relation("RequestsUsers")
-  PurchaseItem        PurchaseItem[]
+  PurchaseItems       PurchaseItem[]
   purchaseItemId      Int?
 }
 
@@ -35,6 +35,7 @@ model Group {
   Users        User[]     @relation("Users")
   RequestUsers User[]     @relation("RequestsUsers")
   Purchases    Purchase[]
+  Summaries    Summary[]
 }
 
 model Purchase {
@@ -64,6 +65,35 @@ model PurchaseItem {
   // productId   Int
   Purchase    Purchase? @relation(fields: [purchaseId], references: [id])
   purchaseId  String?
+}
+
+model Summary {
+  id           String        @id @default(uuid())
+  createdAt    DateTime      @default(now()) @db.Timestamp(6)
+  updatedAt    DateTime      @updatedAt
+  dateStart    DateTime
+  dateEnd      DateTime
+  Group        Group         @relation(fields: [groupId], references: [id])
+  groupId      String
+  Transactions Transaction[]
+}
+
+model Transaction {
+  id        String            @id @default(uuid())
+  createdAt DateTime          @default(now()) @db.Timestamp(6)
+  updatedAt DateTime          @updatedAt
+  status    TransactionStatus @default(Pending)
+  Summary   Summary?          @relation(fields: [summaryId], references: [id])
+  summaryId String?
+  buyerId   String
+  debtorId  String
+  amount    Float
+  // Participants User[]
+}
+
+enum TransactionStatus {
+  Pending
+  Paid
 }
 
 // model Product {

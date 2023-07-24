@@ -17,7 +17,7 @@ export const getPurchases = async (req: Request, res: Response) => {
 }
 
 export const createPurchase = async (req: Request, res: Response) => {
-  console.log(req.body)
+  // console.log(req.body)
   const { name, dateBuy, groupId, buyerId, purchaseItems } = req.body
 
   try {

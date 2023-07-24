@@ -10,7 +10,6 @@ import {
   resetPassword,
 } from "../controllers/auth.controller"
 import * as groupController from "../controllers/group.controller"
-import { getProducts } from "../controllers/product.controller"
 import { getTest } from "../controllers/test.controller"
 
 import {
@@ -22,6 +21,7 @@ import {
 import { verifyToken } from "../middleware/auth"
 import { uploadLogo } from "../controllers/upload.controller"
 import rateLimit from "express-rate-limit"
+import { createSummary } from "../controllers/summary.controler"
 
 const router = Router()
 
@@ -74,6 +74,9 @@ router.post("/addAdmin", groupController.addAdmin)
 router.post("/deleteMember", groupController.deleteMember)
 router.post("/acceptMember", groupController.acceptMember)
 router.post("/rejectMember", groupController.rejectMember)
+
+// Summary
+router.post("/summary", createSummary)
 
 // Products
 // router.get("/products/:id", getProducts)

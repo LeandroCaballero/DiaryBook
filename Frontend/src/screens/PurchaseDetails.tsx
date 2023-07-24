@@ -7,7 +7,7 @@ import {
   ActivityIndicator,
   Pressable,
 } from "react-native"
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import dayjs from "dayjs"
 import "dayjs/locale/es"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
@@ -20,7 +20,6 @@ type Props = NativeStackScreenProps<AuthStackParamList, "PurchaseDetails">
 const PurchaseDetails = ({ route }: Props) => {
   const [data, setData] = useState<Purchase>()
   const [loading, setLoading] = useState(false)
-  const [modalVisible, setModalVisible] = useState(false)
 
   const [isCollapsed, setIsCollapsed] = useState<
     Array<{ isCollapsed: boolean }>
@@ -44,52 +43,35 @@ const PurchaseDetails = ({ route }: Props) => {
         <ActivityIndicator />
       ) : (
         data?.PurchaseItems.map((purchaseItem, index) => (
-          <>
-            <TouchableOpacity
-              key={purchaseItem.id}
-              className="border p-2 mt-2"
-              onPress={() =>
-                setIsCollapsed((prevData) => {
-                  prevData[index].isCollapsed = !prevData[index].isCollapsed
-                  return [...prevData]
-                })
-              }
-            >
+          <TouchableOpacity
+            key={purchaseItem.id}
+            className="border p-2 mt-2 rounded-lg"
+            onPress={() =>
+              setIsCollapsed((prevData) => {
+                prevData[index].isCollapsed = !prevData[index].isCollapsed
+                return [...prevData]
+              })
+            }
+          >
+            <View className="flex flex-row justify-between">
+              <Text>{purchaseItem.productName}</Text>
+              <Text>Total: ${purchaseItem.total}</Text>
+            </View>
+            <Collapsible collapsed={isCollapsed[index].isCollapsed}>
               <View className="flex flex-row justify-between">
-                <Text>{purchaseItem.productName}</Text>
-                <Text>Total: ${purchaseItem.total}</Text>
+                <Text>Cantidad: {purchaseItem.quantity}</Text>
+                <Text>Precio: ${purchaseItem.price}</Text>
               </View>
-              <Collapsible collapsed={isCollapsed[index].isCollapsed}>
-                <View className="flex flex-row justify-between">
-                  <Text>Cantidad: {purchaseItem.quantity}</Text>
-                  <Text>Precio: ${purchaseItem.price}</Text>
-                </View>
-                <Text className="text-center">Para quién es?</Text>
-                {purchaseItem.forUsers.map((user) => (
-                  <Text className="text-center">{user.name}</Text>
-                ))}
-              </Collapsible>
-            </TouchableOpacity>
-          </>
+              <Text className="text-center">Para quién es?</Text>
+              {purchaseItem.forUsers.map((user) => (
+                <Text key={user.id} className="text-center">
+                  {user.name}
+                </Text>
+              ))}
+            </Collapsible>
+          </TouchableOpacity>
         ))
       )}
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          setModalVisible(!modalVisible)
-        }}
-      >
-        <View className="flex flex-row justify-center items-center">
-          <View className="rounded-md p-3">
-            <Text className="text-center">Hello Worlds!</Text>
-            <Pressable onPress={() => setModalVisible(!modalVisible)}>
-              <Text>Hide Modal</Text>
-            </Pressable>
-          </View>
-        </View>
-      </Modal>
     </ScrollView>
   )
 }

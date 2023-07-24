@@ -36,7 +36,14 @@ const AuthStack = () => {
           name="CreatePurchase"
           component={CreatePurchase}
         />
-        <Stack.Screen name="PurchaseDetails" component={PurchaseDetails} />
+        <Stack.Screen
+          name="PurchaseDetails"
+          component={PurchaseDetails}
+          options={{
+            title: "Detalles de la compra",
+            animation: "fade_from_bottom",
+          }}
+        />
         <Stack.Screen name="CreateGroup" component={CreateGroup} />
       </>
     </Stack.Navigator>
