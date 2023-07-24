@@ -1,10 +1,10 @@
-import { Group } from "./interfaces/prisma.interfaces"
+import { Group, Purchase } from "./interfaces/prisma.interfaces"
 
 export type AuthStackParamList = {
   Home: undefined
   CreatePurchase: { group: Group; title: string; userInfo?: userInfo }
   Group: { group: Group; title: string }
-  PurchaseDetails: { purchaseId: number }
+  PurchaseDetails: { purchase: Purchase }
   CreateGroup: undefined
   Profile: undefined
   Settings: { user: userInfo }
@@ -21,4 +21,8 @@ export type userInfo = {
   email: string
   token: string
   profileImage?: string
+}
+
+export type ParamId = {
+  id: string
 }

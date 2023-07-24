@@ -26,7 +26,7 @@ interface Group {
 }
 
 interface Purchase {
-  id: number
+  id: string
   createdAt: Date
   updatedAt: Date
   dateBuy: Date | undefined
@@ -39,7 +39,7 @@ interface Purchase {
 }
 
 interface PurchaseItem {
-  id: number
+  id: string
   createdAt: Date
   updatedAt: Date
   quantity: number

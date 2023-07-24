@@ -31,6 +31,7 @@ export const getGroups = async (req: Request, res: Response) => {
       },
       RequestUsers: true,
     },
+    take: 10,
   })
 
   res.status(200).json(groups)

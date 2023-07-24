@@ -15,9 +15,11 @@ import { UserCircleIcon } from "react-native-heroicons/outline"
 import CarouselGroups from "../components/Home/CarouselGroups"
 import PurchaseComponent from "../components/Home/PurchaseComponent"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
-import { AuthStackParamList } from "../types"
+import { AuthStackParamList, userInfo } from "../types"
 import { Group, Purchase } from "../interfaces/prisma.interfaces"
 import { API_URL } from "../../config"
+import { getGroups } from "../services/groups"
+import { getPurchases } from "../services/purchases"
 
 type Props = NativeStackScreenProps<AuthStackParamList, "Home">
 
@@ -26,12 +28,7 @@ const Home = ({ navigation }: Props) => {
     groups: Group[]
     purchases: Purchase[]
   }>({ groups: [], purchases: [] })
-  const [user, setUser] = useState<{
-    id: number
-    name: string
-    email: string
-    token: string
-  }>()
+  const [user, setUser] = useState<userInfo>()
   const [loading, setLoading] = useState(false)
 
   useLayoutEffect(() => {
@@ -47,32 +44,22 @@ const Home = ({ navigation }: Props) => {
 
   const fetchData = async () => {
     setLoading(true)
+    let userInfo: userInfo = JSON.parse(
+      (await AsyncStorage.getItem("userInfo")) || ""
+    )
+    setUser(userInfo)
     try {
-      let userInfo = (await AsyncStorage.getItem("userInfo")) || ""
       const [groups, purchases] = await Promise.all([
-        await fetch(`${API_URL}/groups/${JSON.parse(userInfo).id}`),
-        await fetch(`${API_URL}/purchases`),
+        getGroups({ id: userInfo.id }),
+        getPurchases({ id: userInfo.id }),
       ])
 
-      // console.log(groups, purchases)
-
-      const groupsJSON: Group[] = await groups.json()
-      const purchasesJSON: Purchase[] = await purchases.json()
-
-      setUser(JSON.parse(userInfo))
-
-      // console.log("grupos", typeof groupsJSON)
-
-      setData({ groups: groupsJSON, purchases: purchasesJSON })
+      setData({ groups: groups, purchases: purchases })
     } catch (error) {
-      // console.log(error)
+      console.log(error)
     } finally {
       setLoading(false)
     }
-  }
-
-  const toDetails = (id: number) => {
-    navigation.navigate("PurchaseDetails", { purchaseId: id })
   }
 
   return (

@@ -57,7 +57,7 @@ router.get(["/", "/test/:name"], (req, res) => {
 })
 
 // Purchases
-router.get("/purchases", getPurchases)
+router.get("/purchases/:userId", getPurchases)
 router.post("/test", getTest)
 router.get("/purchase/:id", getOnePruchase)
 router.post("/purchase", createPurchase)

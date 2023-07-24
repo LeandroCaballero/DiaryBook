@@ -4,17 +4,16 @@ import {
   View,
   Text,
   ScrollView,
-  RefreshControl,
   ActivityIndicator,
   Pressable,
 } from "react-native"
-import React, { useEffect, useLayoutEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 import dayjs from "dayjs"
 import "dayjs/locale/es"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import { AuthStackParamList } from "../types"
 import { Purchase } from "../interfaces/prisma.interfaces"
-import { API_URL } from "../../config"
+import Collapsible from "react-native-collapsible"
 
 type Props = NativeStackScreenProps<AuthStackParamList, "PurchaseDetails">
 
@@ -23,53 +22,55 @@ const PurchaseDetails = ({ route }: Props) => {
   const [loading, setLoading] = useState(false)
   const [modalVisible, setModalVisible] = useState(false)
 
+  const [isCollapsed, setIsCollapsed] = useState<
+    Array<{ isCollapsed: boolean }>
+  >([])
+
   useEffect(() => {
-    fetchData()
+    const { purchase } = route.params
+    setData(purchase)
+    setIsCollapsed(purchase.PurchaseItems.map(() => ({ isCollapsed: true })))
   }, [])
 
-  const fetchData = async () => {
-    setLoading(true)
-    dayjs.locale("es")
-    // console.log(route.params.purchase)
-    try {
-      const response = await fetch(
-        `${API_URL}/purchase/${route.params.purchaseId}`
-      )
-      const json = await response.json()
-      // console.log("en detalles", json)
-
-      setData(json)
-    } catch (error) {
-      console.log(error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
   return (
-    <ScrollView
-      refreshControl={
-        <RefreshControl refreshing={loading} onRefresh={fetchData} />
-      }
-      className="flex flex-column bg-blue-800 h-full"
-    >
-      <Text className="text-white text-xl text-center">{data?.name}</Text>
-      <Text className="text-white text-xl text-center">
+    <ScrollView className="flex flex-column h-full p-3">
+      <Text className="text-xl text-center">{data?.name}</Text>
+      <Text className="text-center">
         {dayjs(data?.dateBuy).format("DD [de] MMMM")}
       </Text>
-      <Text className="text-white text-xl text-center">Detalles</Text>
+      <Text className="my-2 text-lg">Lista de items</Text>
+
       {loading ? (
         <ActivityIndicator />
       ) : (
-        data?.PurchaseItems.map((purchase) => (
-          <TouchableOpacity
-            key={purchase.id}
-            className="border border-white mb-3 py-2"
-            onPress={() => setModalVisible(!modalVisible)}
-          >
-            {/* <Text className="text-white">{purchase.Product.name}</Text> */}
-            <Text>Test</Text>
-          </TouchableOpacity>
+        data?.PurchaseItems.map((purchaseItem, index) => (
+          <>
+            <TouchableOpacity
+              key={purchaseItem.id}
+              className="border p-2 mt-2"
+              onPress={() =>
+                setIsCollapsed((prevData) => {
+                  prevData[index].isCollapsed = !prevData[index].isCollapsed
+                  return [...prevData]
+                })
+              }
+            >
+              <View className="flex flex-row justify-between">
+                <Text>{purchaseItem.productName}</Text>
+                <Text>Total: ${purchaseItem.total}</Text>
+              </View>
+              <Collapsible collapsed={isCollapsed[index].isCollapsed}>
+                <View className="flex flex-row justify-between">
+                  <Text>Cantidad: {purchaseItem.quantity}</Text>
+                  <Text>Precio: ${purchaseItem.price}</Text>
+                </View>
+                <Text className="text-center">Para quién es?</Text>
+                {purchaseItem.forUsers.map((user) => (
+                  <Text className="text-center">{user.name}</Text>
+                ))}
+              </Collapsible>
+            </TouchableOpacity>
+          </>
         ))
       )}
       <Modal
@@ -81,7 +82,7 @@ const PurchaseDetails = ({ route }: Props) => {
         }}
       >
         <View className="flex flex-row justify-center items-center">
-          <View className="bg-white rounded-md p-3">
+          <View className="rounded-md p-3">
             <Text className="text-center">Hello Worlds!</Text>
             <Pressable onPress={() => setModalVisible(!modalVisible)}>
               <Text>Hide Modal</Text>
