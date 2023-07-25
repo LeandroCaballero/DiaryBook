@@ -127,6 +127,7 @@ const Group = ({ route, navigation }: Props) => {
           show={showNewSummaryModal}
           closeModal={() => setShowNewSummaryModal(false)}
           group={group}
+          userInfo={user}
           navigation={navigation}
         />
       </ScrollView>

@@ -33,7 +33,9 @@ export const createPurchase = async (req: Request, res: Response) => {
               ...purchaseItems.map((purchaseItem: any) => ({
                 price: +purchaseItem.price,
                 quantity: +purchaseItem.quantity,
-                total: +purchaseItem.price * +purchaseItem.quantity,
+                total:
+                  (+purchaseItem.price * +purchaseItem.quantity) /
+                  purchaseItem.forUsers.length,
                 productName: purchaseItem.productName,
               })),
             ],

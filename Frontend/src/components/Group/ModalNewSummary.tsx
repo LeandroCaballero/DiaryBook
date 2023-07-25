@@ -17,12 +17,14 @@ import DateTimePicker, {
 import dayjs from "dayjs"
 import { date } from "zod"
 import { createSummary } from "../../services/summary"
+import { userInfo } from "../../types"
 
 interface Props {
   group: Group
   show: boolean
   closeModal: () => void
   navigation: any
+  userInfo?: userInfo
 }
 
 const enum TypeDates {
@@ -30,7 +32,13 @@ const enum TypeDates {
   dateEnd = "dateEnd",
 }
 
-const ModalNewSummary = ({ group, show, closeModal, navigation }: Props) => {
+const ModalNewSummary = ({
+  group,
+  show,
+  closeModal,
+  navigation,
+  userInfo,
+}: Props) => {
   const [dates, setDates] = useState<{ dateStart: Date; dateEnd: Date }>({
     dateStart: dayjs().subtract(14, "d").toDate(),
     dateEnd: dayjs().toDate(),
@@ -53,7 +61,12 @@ const ModalNewSummary = ({ group, show, closeModal, navigation }: Props) => {
   const generateSummary = async () => {
     const { dateStart, dateEnd } = dates
     try {
-      await createSummary({ dateEnd, dateStart, groupId: group.id })
+      await createSummary({
+        dateEnd,
+        dateStart,
+        groupId: group.id,
+        userId: userInfo?.id,
+      })
 
       Toast.show({
         type: "success",

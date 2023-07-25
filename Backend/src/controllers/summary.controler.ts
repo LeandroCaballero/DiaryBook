@@ -35,15 +35,27 @@ export const createSummary = async (req: Request, res: Response) => {
 
   const transactionsFinish = findGroup?.Purchases.reduce((acc, curr) => {
     for (const purchaseItem of curr.PurchaseItems) {
-      // const find = purchaseItem.forUsers.some((user) =>
-      //   acc.find((el) => el.buyerId == user.id)
-      // )
+      for (const user of purchaseItem.forUsers) {
+        if (user.id != userId) {
+          let findOldIndex = acc.findIndex(
+            (el) => el.buyerId == userId && el.debtorId == user.id
+          )
+          if (findOldIndex > -1) {
+            acc[findOldIndex].amount += purchaseItem.total
+          } else {
+            acc.push({
+              amount: purchaseItem.total,
+              buyerId: userId,
+              debtorId: user.id,
+            })
+          }
+        }
+      }
     }
-    // curr.PurchaseItems.map((purchaseItem) => {})
     return [...acc]
   }, initialValue)
 
-  console.log(findGroup)
+  console.log(transactionsFinish)
   res.status(200).json(findGroup)
 
   // try {
