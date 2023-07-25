@@ -80,11 +80,7 @@ const ModalEditMembers = ({ group, show, closeModal, navigation }: Props) => {
   }
 
   return (
-    <Modal
-      animationType="fade"
-      visible={show}
-      onRequestClose={() => (show = false)}
-    >
+    <Modal animationType="fade" visible={show} onRequestClose={closeModal}>
       <SafeAreaView className="h-screen flex flex-col p-3">
         <ScrollView>
           {/* Members */}

@@ -10,6 +10,7 @@ import { SafeAreaView } from "react-native"
 import { PencilSquareIcon, PlusIcon } from "react-native-heroicons/outline"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import ModalEditMembers from "../components/Group/ModalEditMembers"
+import ModalNewSummary from "../components/Group/ModalNewSummary"
 import { AuthStackParamList } from "../types"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
 
@@ -25,6 +26,7 @@ const Group = ({ route, navigation }: Props) => {
     token: string
   }>()
   const [showEditMemberModal, setShowEditMemberModal] = useState(false)
+  const [showNewSummaryModal, setShowNewSummaryModal] = useState(false)
 
   useEffect(() => {
     AsyncStorage.getItem("userInfo").then((user) =>
@@ -96,10 +98,34 @@ const Group = ({ route, navigation }: Props) => {
         ) : (
           <Text>Sin resultados</Text>
         )}
-
+        <View className="flex flex-row justify-between">
+          <Text className="text-lg">Resumenes</Text>
+          <Pressable
+            onPress={() => setShowNewSummaryModal(true)}
+            className="rounded-full border p-0.5"
+          >
+            <PlusIcon size={25} color="#000000" />
+          </Pressable>
+        </View>
+        {group.Purchases.length > 0 ? (
+          group.Purchases.map((el) => (
+            <View key={el.id} className="flex flex-row justify-between">
+              <Text>{el.name}</Text>
+            </View>
+          ))
+        ) : (
+          <Text>Sin resultados</Text>
+        )}
         <ModalEditMembers
           show={showEditMemberModal}
           closeModal={() => setShowEditMemberModal(false)}
+          group={group}
+          navigation={navigation}
+        />
+
+        <ModalNewSummary
+          show={showNewSummaryModal}
+          closeModal={() => setShowNewSummaryModal(false)}
           group={group}
           navigation={navigation}
         />

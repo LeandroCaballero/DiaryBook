@@ -15,7 +15,7 @@ interface User {
 }
 
 interface Group {
-  id: number
+  id: string
   createdAt: Date
   updatedAt: Date
   name: String

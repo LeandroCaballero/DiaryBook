@@ -18,8 +18,8 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import { AuthStackParamList, userInfo } from "../types"
 import { Group, Purchase } from "../interfaces/prisma.interfaces"
 import { API_URL } from "../../config"
-import { getGroups } from "../services/groups"
-import { getPurchases } from "../services/purchases"
+import { getGroups } from "../services/group"
+import { getPurchases } from "../services/purchase"
 
 type Props = NativeStackScreenProps<AuthStackParamList, "Home">
 
