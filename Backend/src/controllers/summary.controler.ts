@@ -1,5 +1,6 @@
 import { Request, Response } from "express"
 import prisma from "../server/prisma"
+import { User } from "@prisma/client"
 
 // export const getSummaries = () => {}
 
@@ -29,29 +30,42 @@ export const createSummary = async (req: Request, res: Response) => {
 
   const initialValue: {
     buyerId: string
-    debtorId: string
+    debtors: string[]
     amount: number
   }[] = []
 
   const transactionsFinish = findGroup?.Purchases.reduce((acc, curr) => {
+    let findOldIndex = acc.findIndex((el) => el.buyerId == curr.buyerId)
+    let users: string[] = findOldIndex > -1 ? acc[findOldIndex].debtors : []
+    let newAmount = 0
+
     for (const purchaseItem of curr.PurchaseItems) {
       for (const user of purchaseItem.forUsers) {
-        if (user.id != userId) {
-          let findOldIndex = acc.findIndex(
-            (el) => el.buyerId == userId && el.debtorId == user.id
-          )
-          if (findOldIndex > -1) {
-            acc[findOldIndex].amount += purchaseItem.total
-          } else {
-            acc.push({
-              amount: purchaseItem.total,
-              buyerId: userId,
-              debtorId: user.id,
-            })
+        let findOldUser = users.find((us) => us == user.id)
+        if (user.id != curr.buyerId) {
+          if (!findOldUser) {
+            users.push(user.id)
           }
+          newAmount += purchaseItem.total
         }
       }
     }
+
+    if (findOldIndex > -1) {
+      let { amount, buyerId, debtors } = acc[findOldIndex]
+      acc[findOldIndex] = {
+        buyerId,
+        amount: amount + newAmount,
+        debtors: users,
+      }
+    } else {
+      acc.push({
+        amount: newAmount,
+        buyerId: curr.buyerId,
+        debtors: users,
+      })
+    }
+
     return [...acc]
   }, initialValue)
 
