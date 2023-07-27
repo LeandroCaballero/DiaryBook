@@ -80,8 +80,8 @@ const ModalNewSummary = ({
 
   return (
     <Modal animationType="fade" visible={show} onRequestClose={closeModal}>
+      <Toast />
       <SafeAreaView className="h-screen flex flex-col p-3">
-        <Toast />
         <ScrollView>
           <Text className="text-center text-lg">Agregar resúmen</Text>
           <Text>
