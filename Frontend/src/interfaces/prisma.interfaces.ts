@@ -1,8 +1,10 @@
+import { TransactionStatus } from "../enums"
+
 interface User {
   id: string
   createdAt: Date
   updatedAt: Date
-  name: String
+  name: string
   email: String
   password: String
   confirmEmail: Boolean
@@ -23,6 +25,7 @@ interface Group {
   Users: User[]
   Purchases: Purchase[]
   RequestUsers: User[]
+  Summaries: Summary[]
 }
 
 interface Purchase {
@@ -52,4 +55,25 @@ interface PurchaseItem {
   purchaseId: number | undefined
 }
 
-export { Group, Purchase, PurchaseItem, User }
+interface Summary {
+  id: string
+  createdAt: Date
+  updatedAt: Date
+  dateStart: Date
+  dateEnd: Date
+  Group: Group
+  Transactions: Transaction[]
+}
+
+interface Transaction {
+  id: string
+  createdAt: Date
+  updatedAt: Date
+  status: TransactionStatus
+  Summary: Summary
+  buyerId: string
+  debtorId: string
+  amount: number
+}
+
+export { Group, Purchase, PurchaseItem, User, Summary, Transaction }

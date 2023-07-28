@@ -8,6 +8,7 @@ import Group from "../screens/Group"
 import { AuthStackParamList } from "../types"
 import Profile from "../screens/Profile"
 import Settings from "../screens/Settings"
+import SummaryDetails from "../screens/SummaryDetails"
 
 const Stack = createNativeStackNavigator<AuthStackParamList>()
 
@@ -45,6 +46,14 @@ const AuthStack = () => {
           }}
         />
         <Stack.Screen name="CreateGroup" component={CreateGroup} />
+        <Stack.Screen
+          name="SummaryDetails"
+          component={SummaryDetails}
+          options={{
+            title: "Detalles del resúmen",
+            animation: "fade_from_bottom",
+          }}
+        />
       </>
     </Stack.Navigator>
   )

@@ -13,6 +13,8 @@ import ModalEditMembers from "../components/Group/ModalEditMembers"
 import ModalNewSummary from "../components/Group/ModalNewSummary"
 import { AuthStackParamList } from "../types"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
+import PurchaseComponent from "../components/Home/PurchaseComponent"
+import SummaryComponent from "../components/Group/SummaryComponent"
 
 type Props = NativeStackScreenProps<AuthStackParamList, "Group">
 
@@ -33,15 +35,6 @@ const Group = ({ route, navigation }: Props) => {
       setUser(JSON.parse(user || ""))
     )
   }, [])
-
-  // const closeModal = (type: string) =>{
-  //   if (type == 'actionSuccess') {
-  //     setShowEditMemberModal(false)
-  //     na
-  //   }else{
-
-  //   }
-  // }
 
   return (
     <SafeAreaView className="p-3 h-full">
@@ -90,10 +83,12 @@ const Group = ({ route, navigation }: Props) => {
           </Pressable>
         </View>
         {group.Purchases.length > 0 ? (
-          group.Purchases.map((el) => (
-            <View key={el.id} className="flex flex-row justify-between">
-              <Text>{el.name}</Text>
-            </View>
+          group.Purchases.map((purchase) => (
+            <PurchaseComponent
+              item={purchase}
+              key={purchase.id}
+              navigation={navigation}
+            />
           ))
         ) : (
           <Text>Sin resultados</Text>
@@ -107,13 +102,20 @@ const Group = ({ route, navigation }: Props) => {
             <PlusIcon size={25} color="#000000" />
           </Pressable>
         </View>
-        {group.Purchases.length > 0 ? (
-          group.Purchases.map((el) => (
-            <View key={el.id} className="flex flex-row justify-between">
-              <Text>{el.name}</Text>
-            </View>
+        {group.Summaries.length > 0 ? (
+          group.Summaries.map((summary) => (
+            <SummaryComponent
+              users={group.Admins.concat(group.Users).map((user) => ({
+                [user.id]: user.name,
+                // name: user.name,
+              }))}
+              item={summary}
+              key={summary.id}
+              navigation={navigation}
+            />
           ))
         ) : (
+          // <View></View>
           <Text>Sin resultados</Text>
         )}
         <ModalEditMembers

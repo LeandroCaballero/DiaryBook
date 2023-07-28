@@ -80,9 +80,9 @@ const ModalNewSummary = ({
 
   return (
     <Modal animationType="fade" visible={show} onRequestClose={closeModal}>
-      <Toast />
       <SafeAreaView className="h-screen flex flex-col p-3">
         <ScrollView>
+          <Toast />
           <Text className="text-center text-lg">Agregar resúmen</Text>
           <Text>
             Fecha inicio: {dayjs(dates.dateStart).format("DD [de] MMMM")}

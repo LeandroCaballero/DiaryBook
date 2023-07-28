@@ -27,9 +27,13 @@ export const getGroups = async (req: Request, res: Response) => {
       Users: true,
       Admins: true,
       Purchases: {
-        include: { PurchaseItems: { include: { forUsers: true } } },
+        include: {
+          PurchaseItems: { include: { forUsers: true } },
+          Buyer: true,
+        },
       },
       RequestUsers: true,
+      Summaries: { include: { Transactions: true } },
     },
     take: 10,
   })

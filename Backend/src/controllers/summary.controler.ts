@@ -28,78 +28,90 @@ export const createSummary = async (req: Request, res: Response) => {
     },
   })
 
+  type NewTransaction = {
+    buyerId: string
+    debtorId: string
+    amount: number
+  }[]
+
   const initialValue: {
     buyerId: string
     debtors: string[]
     amount: number
   }[] = []
 
-  const transactionsFinish = findGroup?.Purchases.reduce((acc, curr) => {
-    let findOldIndex = acc.findIndex((el) => el.buyerId == curr.buyerId)
-    let users: string[] = findOldIndex > -1 ? acc[findOldIndex].debtors : []
-    let newAmount = 0
+  const initialValueFinal: NewTransaction = []
 
-    for (const purchaseItem of curr.PurchaseItems) {
-      for (const user of purchaseItem.forUsers) {
-        let findOldUser = users.find((us) => us == user.id)
-        if (user.id != curr.buyerId) {
-          if (!findOldUser) {
-            users.push(user.id)
+  let transactionsFinish: NewTransaction = []
+  if (findGroup) {
+    transactionsFinish = findGroup.Purchases.reduce((acc, curr) => {
+      let findOldIndex = acc.findIndex((el) => el.buyerId == curr.buyerId)
+      let users: string[] = findOldIndex > -1 ? acc[findOldIndex].debtors : []
+      let newAmount = 0
+
+      for (const purchaseItem of curr.PurchaseItems) {
+        for (const user of purchaseItem.forUsers) {
+          let findOldUser = users.find((us) => us == user.id)
+          if (user.id != curr.buyerId) {
+            if (!findOldUser) {
+              users.push(user.id)
+            }
+            newAmount += purchaseItem.total
           }
-          newAmount += purchaseItem.total
         }
       }
-    }
 
-    if (findOldIndex > -1) {
-      let { amount, buyerId, debtors } = acc[findOldIndex]
-      acc[findOldIndex] = {
-        buyerId,
-        amount: amount + newAmount,
-        debtors: users,
+      if (findOldIndex > -1) {
+        let { amount, buyerId } = acc[findOldIndex]
+        acc[findOldIndex] = {
+          buyerId,
+          amount: amount + newAmount,
+          debtors: users,
+        }
+      } else {
+        acc.push({
+          amount: newAmount,
+          buyerId: curr.buyerId,
+          debtors: users,
+        })
       }
-    } else {
-      acc.push({
-        amount: newAmount,
+
+      return [...acc]
+    }, initialValue).reduce((acc, curr) => {
+      let newTransaction = curr.debtors.map((id) => ({
         buyerId: curr.buyerId,
-        debtors: users,
-      })
-    }
+        amount: curr.amount / curr.debtors.length,
+        debtorId: id,
+      }))
+      return [...acc, ...newTransaction]
+    }, initialValueFinal)
+  }
 
-    return [...acc]
-  }, initialValue)
+  // console.log(transactionsFinish)
+  // res.status(200).json(findGroup)
 
-  console.log(transactionsFinish)
-  res.status(200).json(findGroup)
-
-  // try {
-  //   const newSummary = await prisma.summary.create({
-  //     data: {
-  //       dateStart,
-  //       dateEnd,
-  //       Group: { connect: { id: groupId } },
-  //       Transactions: {
-  //         createMany: {
-  //           data: [
-  //             ...transactions.map(
-  //               (transaction: {
-  //                 buyerId: string
-  //                 debtorId: string
-  //                 amount: number
-  //               }) => ({
-  //                 buyerId: transaction.buyerId,
-  //                 debtorId: transaction.debtorId,
-  //                 amount: transaction.amount,
-  //               })
-  //             ),
-  //           ],
-  //         },
-  //       },
-  //     },
-  //   })
-  //   res.status(200).json(newSummary)
-  // } catch (error) {
-  //   console.log(error)
-  //   res.status(500).json({ message: "Error intente más tarde" })
-  // }
+  try {
+    const newSummary = await prisma.summary.create({
+      data: {
+        dateStart,
+        dateEnd,
+        Group: { connect: { id: groupId } },
+        Transactions: {
+          createMany: {
+            data: [
+              ...transactionsFinish.map((transaction) => ({
+                buyerId: transaction.buyerId,
+                debtorId: transaction.debtorId,
+                amount: transaction.amount,
+              })),
+            ],
+          },
+        },
+      },
+    })
+    res.status(200).json(newSummary)
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({ message: "Error intente más tarde" })
+  }
 }

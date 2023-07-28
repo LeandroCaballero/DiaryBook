@@ -11,15 +11,17 @@ import React, { useEffect, useRef, useState } from "react"
 import dayjs from "dayjs"
 import "dayjs/locale/es"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
-import { AuthStackParamList } from "../types"
+import { AuthStackParamList, userInfo } from "../types"
 import { Purchase } from "../interfaces/prisma.interfaces"
 import Collapsible from "react-native-collapsible"
+import AsyncStorage from "@react-native-async-storage/async-storage"
 
 type Props = NativeStackScreenProps<AuthStackParamList, "PurchaseDetails">
 
 const PurchaseDetails = ({ route }: Props) => {
   const [data, setData] = useState<Purchase>()
   const [loading, setLoading] = useState(false)
+  const [userInfo, setUserInfo] = useState<userInfo>()
 
   const [isCollapsed, setIsCollapsed] = useState<
     Array<{ isCollapsed: boolean }>
@@ -29,6 +31,10 @@ const PurchaseDetails = ({ route }: Props) => {
     const { purchase } = route.params
     setData(purchase)
     setIsCollapsed(purchase.PurchaseItems.map(() => ({ isCollapsed: true })))
+
+    AsyncStorage.getItem("userInfo").then((user) =>
+      setUserInfo(JSON.parse(user || ""))
+    )
   }, [])
 
   return (
@@ -37,6 +43,7 @@ const PurchaseDetails = ({ route }: Props) => {
       <Text className="text-center">
         {dayjs(data?.dateBuy).format("DD [de] MMMM")}
       </Text>
+      <Text className="text-center">{data?.Buyer?.name}</Text>
       <Text className="my-2 text-lg">Lista de items</Text>
 
       {loading ? (
@@ -65,7 +72,7 @@ const PurchaseDetails = ({ route }: Props) => {
               <Text className="text-center">Para quién es?</Text>
               {purchaseItem.forUsers.map((user) => (
                 <Text key={user.id} className="text-center">
-                  {user.name}
+                  {userInfo?.id != user.id ? user.name : "Para mí"}
                 </Text>
               ))}
             </Collapsible>

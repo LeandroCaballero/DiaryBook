@@ -1,10 +1,16 @@
-import { Group, Purchase } from "./interfaces/prisma.interfaces"
+import { Group, Purchase, Summary } from "./interfaces/prisma.interfaces"
 
 export type AuthStackParamList = {
   Home: undefined
   CreatePurchase: { group: Group; title: string; userInfo?: userInfo }
   Group: { group: Group; title: string }
   PurchaseDetails: { purchase: Purchase }
+  SummaryDetails: {
+    summary: Summary
+    users: {
+      [x: string]: string
+    }[]
+  }
   CreateGroup: undefined
   Profile: undefined
   Settings: { user: userInfo }

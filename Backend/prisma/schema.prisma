@@ -60,7 +60,7 @@ model PurchaseItem {
   productName String
   price       Float
   forUsers    User[]
-  total       Int
+  total       Float
   // Product    Product   @relation(fields: [productId], references: [id])
   // productId   Int
   Purchase    Purchase? @relation(fields: [purchaseId], references: [id])
