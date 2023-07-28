@@ -1,3 +1,4 @@
+import { Transaction } from "../interfaces/prisma.interfaces"
 import { API_URL } from "../../config"
 import { ParamId } from "../types"
 
@@ -21,5 +22,12 @@ export const createSummary = async ({
     },
     body: JSON.stringify({ dateStart, dateEnd, groupId, userId }),
   })
+  return await res.json()
+}
+
+export const confirmTransaction = async (transactionId: string) => {
+  const res = await fetch(
+    `${API_URL}/summary/confirmTransaction/${transactionId}`
+  )
   return await res.json()
 }

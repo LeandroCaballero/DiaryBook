@@ -2,7 +2,11 @@ import { Request, Response } from "express"
 import prisma from "../server/prisma"
 import { User } from "@prisma/client"
 
-// export const getSummaries = () => {}
+type NewTransaction = {
+  buyerId: string
+  debtorId: string
+  amount: number
+}[]
 
 export const createSummary = async (req: Request, res: Response) => {
   const { dateStart, dateEnd, groupId, userId, transactions } = req.body
@@ -27,12 +31,6 @@ export const createSummary = async (req: Request, res: Response) => {
       },
     },
   })
-
-  type NewTransaction = {
-    buyerId: string
-    debtorId: string
-    amount: number
-  }[]
 
   const initialValue: {
     buyerId: string
@@ -114,4 +112,23 @@ export const createSummary = async (req: Request, res: Response) => {
     console.log(error)
     res.status(500).json({ message: "Error intente más tarde" })
   }
+}
+
+export const confirmTransaction = async (req: Request, res: Response) => {
+  const transactionId = req.params.id
+
+  try {
+    await prisma.transaction.update({
+      where: {
+        id: transactionId,
+      },
+      data: {
+        status: "Paid",
+      },
+    })
+  } catch (error) {
+    return res.status(500).json({ message: "Error al confirmar transacción" })
+  }
+
+  res.status(200).json({ message: "Transacción confirmada con éxito!" })
 }

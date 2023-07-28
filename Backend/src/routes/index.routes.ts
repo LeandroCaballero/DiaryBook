@@ -21,7 +21,10 @@ import {
 import { verifyToken } from "../middleware/auth"
 import { uploadLogo } from "../controllers/upload.controller"
 import rateLimit from "express-rate-limit"
-import { createSummary } from "../controllers/summary.controler"
+import {
+  confirmTransaction,
+  createSummary,
+} from "../controllers/summary.controler"
 
 const router = Router()
 
@@ -77,6 +80,7 @@ router.post("/rejectMember", groupController.rejectMember)
 
 // Summary
 router.post("/summary", createSummary)
+router.get("/summary/confirmTransaction/:id", confirmTransaction)
 
 // Products
 // router.get("/products/:id", getProducts)

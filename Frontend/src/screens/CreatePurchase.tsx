@@ -290,7 +290,7 @@ const CreatePurchase = ({
           Fecha de la compra: {dayjs(data.dateBuy).format("DD [de] MMMM")}
         </Text>
         <Pressable
-          className="borderrounded-lg p-2 my-1 w-1/2"
+          className="border rounded-lg p-2 my-1 w-1/2"
           onPress={() => setShowCalendar(true)}
         >
           <Text className="text-center">Seleccionar fecha</Text>

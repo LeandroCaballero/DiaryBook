@@ -12,9 +12,12 @@ import dayjs from "dayjs"
 import "dayjs/locale/es"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import { AuthStackParamList, userInfo } from "../types"
-import { Summary } from "../interfaces/prisma.interfaces"
+import { Summary, Transaction } from "../interfaces/prisma.interfaces"
 import Collapsible from "react-native-collapsible"
 import AsyncStorage from "@react-native-async-storage/async-storage"
+import { CheckIcon } from "react-native-heroicons/outline"
+import Toast from "react-native-toast-message"
+import { confirmTransaction } from "../services/summary"
 
 type Props = NativeStackScreenProps<AuthStackParamList, "SummaryDetails">
 
@@ -37,6 +40,25 @@ const SummaryDetails = ({ route }: Props) => {
     )
     setIsCollapsed(summary.Transactions.map(() => ({ isCollapsed: true })))
   }, [])
+
+  const checkTransaction = async (transaction: Transaction) => {
+    try {
+      const res = await confirmTransaction(transaction.id)
+
+      Toast.show({
+        type: "success",
+        text1: "Excelente!",
+        text2: res.message,
+      })
+    } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "Error!",
+        text2: "Hubo un error intente más tarde",
+      })
+      console.log(error)
+    }
+  }
 
   return (
     <ScrollView className="flex flex-column h-full p-3">
@@ -67,9 +89,19 @@ const SummaryDetails = ({ route }: Props) => {
               <Text>Estado: {transaction.status}</Text>
             </View>
             <Collapsible collapsed={isCollapsed[index].isCollapsed}>
-              <View>
-                <Text>Comprador: {users[transaction.buyerId]}</Text>
-                <Text>Deudor: {users[transaction.debtorId]}</Text>
+              <View className="flex flex-row justify-between items-center">
+                <View>
+                  <Text>Comprador: {users[transaction.buyerId]}</Text>
+                  <Text>Deudor: {users[transaction.debtorId]}</Text>
+                </View>
+                <View>
+                  <Pressable
+                    className="border rounded-full p-1"
+                    onPress={() => checkTransaction(transaction)}
+                  >
+                    <CheckIcon size={25} color="#000000" />
+                  </Pressable>
+                </View>
               </View>
             </Collapsible>
           </TouchableOpacity>

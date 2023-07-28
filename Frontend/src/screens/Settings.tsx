@@ -348,9 +348,14 @@ const Settings = ({
   return (
     <>
       <View>
-        <TouchableOpacity className="p-3 border-b border-gray-400">
+        {/* <TouchableOpacity
+          onPress={() =>
+            setModalNewPassword({ ...modalNewPassword, visible: true })
+          }
+          className="p-3 border-b border-gray-400"
+        >
           <Text>Cambiar nombre de usuario</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         <TouchableOpacity
           className="p-3 border-b border-gray-400"
           onPress={() =>
