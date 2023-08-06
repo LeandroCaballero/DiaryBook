@@ -16,29 +16,33 @@ export const createGroup = async (req: Request, res: Response) => {
 export const getGroups = async (req: Request, res: Response) => {
   const { userId } = req.params
 
-  const groups = await prisma.group.findMany({
-    where: {
-      OR: [
-        { Users: { some: { id: userId } } },
-        { Admins: { some: { id: userId } } },
-      ],
-    },
-    include: {
-      Users: true,
-      Admins: true,
-      Purchases: {
-        include: {
-          PurchaseItems: { include: { forUsers: true } },
-          Buyer: true,
-        },
+  try {
+    const groups = await prisma.group.findMany({
+      where: {
+        OR: [
+          { Users: { some: { id: userId } } },
+          { Admins: { some: { id: userId } } },
+        ],
       },
-      RequestUsers: true,
-      Summaries: { include: { Transactions: true } },
-    },
-    take: 10,
-  })
+      include: {
+        Users: true,
+        Admins: true,
+        Purchases: {
+          include: {
+            PurchaseItems: { include: { forUsers: true } },
+            Buyer: true,
+          },
+        },
+        RequestUsers: true,
+        Summaries: { include: { Transactions: true } },
+      },
+      take: 10,
+    })
 
-  res.status(200).json(groups)
+    return res.status(200).json(groups)
+  } catch (error) {
+    console.log(error)
+  }
 }
 
 export const checkGroupName = async (req: Request, res: Response) => {

@@ -21,7 +21,12 @@
       "adaptiveIcon": {
         "foregroundImage": "./src/assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.leandev.diaryBook"
     },
     "web": {
       "favicon": "./src/assets/favicon.png"
@@ -39,6 +44,11 @@
           "photosPermission": "The app accesses your photos to let you share them with your friends."
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "892d7756-7cfe-4912-abfe-5a3ee47309ae"
+      }
+    }
   }
 }

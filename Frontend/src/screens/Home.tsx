@@ -43,7 +43,8 @@ const Home = ({ navigation }: Props) => {
   }, [])
 
   const fetchData = async () => {
-    setLoading(true)
+    // setLoading(true)
+    console.log("test")
     let userInfo: userInfo = JSON.parse(
       (await AsyncStorage.getItem("userInfo")) || ""
     )
@@ -57,8 +58,6 @@ const Home = ({ navigation }: Props) => {
       setData({ groups: groups, purchases: purchases })
     } catch (error) {
       console.log(error)
-    } finally {
-      setLoading(false)
     }
   }
 

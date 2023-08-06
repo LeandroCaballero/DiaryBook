@@ -84,7 +84,6 @@ router.get("/summary/confirmTransaction/:id", confirmTransaction)
 
 // Products
 // router.get("/products/:id", getProducts)
-
 // Logo
 router.post("/uploadLogo", verifyToken, uploadLogo)
 

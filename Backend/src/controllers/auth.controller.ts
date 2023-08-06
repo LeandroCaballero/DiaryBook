@@ -41,7 +41,7 @@ export const register = async (req: Request, res: Response) => {
       templateId: "d-63875ba1c11a4fecb0a65bc58fab8e74",
       dynamicTemplateData: {
         name,
-        link: `http://localhost:3001/confirmEmail/${user.id}/${token}`,
+        link: `https://diarybookback.fly.dev/confirmEmail/${user.id}/${token}`,
       },
     }
 

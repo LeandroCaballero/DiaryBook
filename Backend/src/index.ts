@@ -17,7 +17,7 @@ app.use(fileupload())
 app.use(router)
 app.use(express.static("public"))
 
-const port = process.env.PORT || "8080"
+const port = process.env.PORT || "3000"
 
 app.listen(port, () =>
   console.log(`Server running on port ${process.env.PORT}`)
